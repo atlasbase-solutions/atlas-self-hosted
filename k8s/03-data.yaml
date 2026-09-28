@@ -1,0 +1,288 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: portal-postgres
+  namespace: atlas
+spec:
+  selector:
+    app.kubernetes.io/name: portal-postgres
+  ports:
+    - name: postgres
+      port: 5432
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: portal-postgres
+  namespace: atlas
+spec:
+  serviceName: portal-postgres
+  replicas: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: portal-postgres
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: portal-postgres
+        app.kubernetes.io/part-of: atlas
+    spec:
+      containers:
+        - name: postgres
+          image: postgres:18.6-alpine3.24
+          env:
+            - name: POSTGRES_DB
+              value: atlas_portal
+            - name: POSTGRES_USER
+              value: atlas_portal
+            - name: POSTGRES_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: atlas-secrets
+                  key: PORTAL_POSTGRES_PASSWORD
+          ports:
+            - name: postgres
+              containerPort: 5432
+          readinessProbe:
+            exec:
+              command: ["sh", "-c", "pg_isready -U atlas_portal -d atlas_portal"]
+            periodSeconds: 5
+          volumeMounts:
+            - name: data
+              mountPath: /var/lib/postgresql
+          resources:
+            requests: {cpu: 250m, memory: 512Mi}
+            limits: {memory: 2Gi}
+  volumeClaimTemplates:
+    - metadata:
+        name: data
+      spec:
+        accessModes: [ReadWriteOnce]
+        resources:
+          requests:
+            storage: 20Gi
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: gateway-postgres
+  namespace: atlas
+spec:
+  selector:
+    app.kubernetes.io/name: gateway-postgres
+  ports:
+    - name: postgres
+      port: 5432
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: gateway-postgres
+  namespace: atlas
+spec:
+  serviceName: gateway-postgres
+  replicas: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: gateway-postgres
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: gateway-postgres
+        app.kubernetes.io/part-of: atlas
+    spec:
+      containers:
+        - name: postgres
+          image: postgres:18.6-alpine3.24
+          env:
+            - name: POSTGRES_DB
+              value: atlas_gateway
+            - name: POSTGRES_USER
+              value: atlas_gateway
+            - name: POSTGRES_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: atlas-secrets
+                  key: GATEWAY_POSTGRES_PASSWORD
+          ports:
+            - name: postgres
+              containerPort: 5432
+          readinessProbe:
+            exec:
+              command: ["sh", "-c", "pg_isready -U atlas_gateway -d atlas_gateway"]
+            periodSeconds: 5
+          volumeMounts:
+            - name: data
+              mountPath: /var/lib/postgresql
+          resources:
+            requests: {cpu: 250m, memory: 512Mi}
+            limits: {memory: 2Gi}
+  volumeClaimTemplates:
+    - metadata:
+        name: data
+      spec:
+        accessModes: [ReadWriteOnce]
+        resources:
+          requests:
+            storage: 20Gi
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: clickhouse
+  namespace: atlas
+spec:
+  selector:
+    app.kubernetes.io/name: clickhouse
+  ports:
+    - {name: http, port: 8123}
+    - {name: native, port: 9000}
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: clickhouse
+  namespace: atlas
+spec:
+  serviceName: clickhouse
+  replicas: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: clickhouse
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: clickhouse
+        app.kubernetes.io/part-of: atlas
+    spec:
+      containers:
+        - name: clickhouse
+          image: clickhouse:26.6.8
+          env:
+            - {name: CLICKHOUSE_DB, value: atlas_gateway}
+            - {name: CLICKHOUSE_USER, value: atlas_gateway}
+            - name: CLICKHOUSE_PASSWORD
+              valueFrom:
+                secretKeyRef: {name: atlas-secrets, key: CLICKHOUSE_PASSWORD}
+            - {name: CLICKHOUSE_DEFAULT_ACCESS_MANAGEMENT, value: "1"}
+          ports:
+            - {name: http, containerPort: 8123}
+            - {name: native, containerPort: 9000}
+          startupProbe:
+            exec: {command: ["clickhouse-client", "--query", "SELECT 1"]}
+            failureThreshold: 30
+            periodSeconds: 5
+          readinessProbe:
+            exec: {command: ["clickhouse-client", "--query", "SELECT 1"]}
+            periodSeconds: 5
+          volumeMounts:
+            - {name: data, mountPath: /var/lib/clickhouse}
+            - {name: settings, mountPath: /etc/clickhouse-server/config.d/atlas-custom-settings.xml, subPath: atlas-custom-settings.xml, readOnly: true}
+          resources:
+            requests: {cpu: 500m, memory: 1Gi}
+            limits: {memory: 4Gi}
+      volumes:
+        - name: settings
+          configMap: {name: clickhouse-settings}
+  volumeClaimTemplates:
+    - metadata: {name: data}
+      spec:
+        accessModes: [ReadWriteOnce]
+        resources:
+          requests: {storage: 100Gi}
+---
+apiVersion: v1
+kind: Service
+metadata: {name: redis, namespace: atlas}
+spec:
+  selector: {app.kubernetes.io/name: redis}
+  ports: [{name: redis, port: 6379}]
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata: {name: redis, namespace: atlas}
+spec:
+  serviceName: redis
+  replicas: 1
+  selector:
+    matchLabels: {app.kubernetes.io/name: redis}
+  template:
+    metadata:
+      labels: {app.kubernetes.io/name: redis, app.kubernetes.io/part-of: atlas}
+    spec:
+      containers:
+        - name: redis
+          image: redis:8.8.3-alpine3.23
+          args: ["redis-server", "--appendonly", "yes", "--appendfsync", "everysec"]
+          ports: [{name: redis, containerPort: 6379}]
+          readinessProbe:
+            exec: {command: ["redis-cli", "ping"]}
+            periodSeconds: 5
+          volumeMounts: [{name: data, mountPath: /data}]
+          resources:
+            requests: {cpu: 100m, memory: 256Mi}
+            limits: {memory: 1Gi}
+  volumeClaimTemplates:
+    - metadata: {name: data}
+      spec:
+        accessModes: [ReadWriteOnce]
+        resources:
+          requests: {storage: 10Gi}
+---
+apiVersion: v1
+kind: Service
+metadata: {name: kafka, namespace: atlas}
+spec:
+  selector: {app.kubernetes.io/name: kafka}
+  ports: [{name: broker, port: 19092}, {name: controller, port: 29093}]
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata: {name: kafka, namespace: atlas}
+spec:
+  serviceName: kafka
+  replicas: 1
+  selector:
+    matchLabels: {app.kubernetes.io/name: kafka}
+  template:
+    metadata:
+      labels: {app.kubernetes.io/name: kafka, app.kubernetes.io/part-of: atlas}
+    spec:
+      securityContext: {fsGroup: 1000}
+      containers:
+        - name: kafka
+          image: apache/kafka:4.2.1
+          env:
+            - {name: KAFKA_NODE_ID, value: "1"}
+            - {name: KAFKA_PROCESS_ROLES, value: "broker,controller"}
+            - {name: KAFKA_CONTROLLER_QUORUM_VOTERS, value: "1@kafka-0.kafka.atlas.svc.cluster.local:29093"}
+            - {name: KAFKA_LISTENERS, value: "CONTROLLER://:29093,PLAINTEXT://:19092"}
+            - {name: KAFKA_ADVERTISED_LISTENERS, value: "PLAINTEXT://kafka:19092"}
+            - {name: KAFKA_LISTENER_SECURITY_PROTOCOL_MAP, value: "CONTROLLER:PLAINTEXT,PLAINTEXT:PLAINTEXT"}
+            - {name: KAFKA_INTER_BROKER_LISTENER_NAME, value: PLAINTEXT}
+            - {name: KAFKA_CONTROLLER_LISTENER_NAMES, value: CONTROLLER}
+            - {name: KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR, value: "1"}
+            - {name: KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR, value: "1"}
+            - {name: KAFKA_TRANSACTION_STATE_LOG_MIN_ISR, value: "1"}
+            - {name: KAFKA_LOG_DIRS, value: /var/lib/kafka/data}
+            - {name: CLUSTER_ID, value: 4L6g3nShT-eMCtK--X86sw}
+          ports:
+            - {name: broker, containerPort: 19092}
+            - {name: controller, containerPort: 29093}
+          startupProbe:
+            exec: {command: ["sh", "-c", "/opt/kafka/bin/kafka-topics.sh --bootstrap-server localhost:19092 --list"]}
+            failureThreshold: 40
+            periodSeconds: 5
+          readinessProbe:
+            exec: {command: ["sh", "-c", "/opt/kafka/bin/kafka-topics.sh --bootstrap-server localhost:19092 --list"]}
+            periodSeconds: 10
+          volumeMounts: [{name: data, mountPath: /var/lib/kafka/data}]
+          resources:
+            requests: {cpu: 500m, memory: 1Gi}
+            limits: {memory: 3Gi}
+  volumeClaimTemplates:
+    - metadata: {name: data}
+      spec:
+        accessModes: [ReadWriteOnce]
+        resources:
+          requests: {storage: 50Gi}

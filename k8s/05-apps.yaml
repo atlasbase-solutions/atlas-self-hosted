@@ -1,0 +1,207 @@
+# Reputation packages are written by Portal and read by Gateway across nodes.
+# Select a storage class supporting ReadWriteMany before applying this claim.
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: antifraud-feed
+  namespace: atlas
+spec:
+  accessModes: [ReadWriteMany]
+  resources:
+    requests: {storage: 2Gi}
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: portal-files
+  namespace: atlas
+spec:
+  accessModes: [ReadWriteOnce]
+  resources:
+    requests: {storage: 20Gi}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: portal
+  namespace: atlas
+spec:
+  selector: {app.kubernetes.io/name: portal}
+  ports: [{name: http, port: 11082, targetPort: http}]
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: portal
+  namespace: atlas
+spec:
+  replicas: 1
+  strategy:
+    type: Recreate
+  selector:
+    matchLabels: {app.kubernetes.io/name: portal}
+  template:
+    metadata:
+      labels: {app.kubernetes.io/name: portal, app.kubernetes.io/part-of: atlas}
+    spec:
+      terminationGracePeriodSeconds: 30
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 10001
+        runAsGroup: 10001
+        fsGroup: 10001
+        seccompProfile: {type: RuntimeDefault}
+      containers:
+        - name: portal
+          image: registry.example.com/atlas/portal:1.0.9
+          imagePullPolicy: IfNotPresent
+          envFrom:
+            - configMapRef: {name: atlas-runtime}
+            - secretRef: {name: atlas-secrets}
+          ports: [{name: http, containerPort: 11082}]
+          startupProbe:
+            httpGet: {path: /health/startup, port: http}
+            failureThreshold: 30
+            periodSeconds: 5
+          livenessProbe:
+            httpGet: {path: /health/live, port: http}
+            periodSeconds: 10
+            failureThreshold: 3
+          readinessProbe:
+            httpGet: {path: /health/ready, port: http}
+            periodSeconds: 5
+            failureThreshold: 3
+          volumeMounts:
+            - {name: portal-files, mountPath: /var/lib/atlas/portal-files}
+            - {name: antifraud-feed, mountPath: /var/lib/atlas/antifraud}
+            # Uncomment together with the matching entry on the gateway
+            # container below and the volume at the bottom of this Deployment
+            # to deliver the license as a file instead of ATLAS_LICENSE_TOKEN
+            # — see k8s/README.md "License delivery".
+            # - {name: atlas-license-file, mountPath: /etc/atlas/license, readOnly: true}
+          securityContext:
+            allowPrivilegeEscalation: false
+            capabilities: {drop: [ALL]}
+          resources:
+            requests: {cpu: 250m, memory: 256Mi}
+            limits: {memory: 1Gi}
+      volumes:
+        - name: antifraud-feed
+          persistentVolumeClaim: {claimName: antifraud-feed}
+        - name: portal-files
+          persistentVolumeClaim: {claimName: portal-files}
+        # - name: atlas-license-file
+        #   secret: {secretName: atlas-license-file}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: gateway
+  namespace: atlas
+spec:
+  selector: {app.kubernetes.io/name: gateway}
+  # The metrics port is a separate one and is NOT routed by the ingress: scrape
+  # it from inside the cluster only.
+  ports:
+    - {name: http, port: 8080, targetPort: http}
+    - {name: metrics, port: 9108, targetPort: metrics}
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: gateway
+  namespace: atlas
+spec:
+  replicas: 2
+  selector:
+    matchLabels: {app.kubernetes.io/name: gateway}
+  template:
+    metadata:
+      labels: {app.kubernetes.io/name: gateway, app.kubernetes.io/part-of: atlas}
+    spec:
+      terminationGracePeriodSeconds: 30
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 10001
+        runAsGroup: 10001
+        seccompProfile: {type: RuntimeDefault}
+      containers:
+        - name: gateway
+          image: registry.example.com/atlas/gateway:1.0.9
+          imagePullPolicy: IfNotPresent
+          envFrom:
+            - configMapRef: {name: atlas-runtime}
+            - secretRef: {name: atlas-secrets}
+          ports:
+            - {name: http, containerPort: 8080}
+            - {name: metrics, containerPort: 9108}
+          startupProbe:
+            httpGet: {path: /health/startup, port: http}
+            failureThreshold: 30
+            periodSeconds: 5
+          livenessProbe:
+            httpGet: {path: /health/live, port: http}
+            periodSeconds: 10
+            failureThreshold: 3
+          readinessProbe:
+            httpGet: {path: /health/ready, port: http}
+            periodSeconds: 5
+            failureThreshold: 3
+          volumeMounts:
+            - {name: antifraud-feed, mountPath: /var/lib/atlas/antifraud, readOnly: true}
+          #   # Same license-file Secret as the portal container — see
+          #   # k8s/README.md "License delivery". readOnlyRootFilesystem
+          #   # above already permits a mounted read-only volume.
+          #   - {name: atlas-license-file, mountPath: /etc/atlas/license, readOnly: true}
+          securityContext:
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: true
+            capabilities: {drop: [ALL]}
+          resources:
+            requests: {cpu: 500m, memory: 256Mi}
+            limits: {memory: 1Gi}
+      volumes:
+        - name: antifraud-feed
+          persistentVolumeClaim: {claimName: antifraud-feed}
+      #   - name: atlas-license-file
+      #     secret: {secretName: atlas-license-file}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: frontend
+  namespace: atlas
+spec:
+  selector: {app.kubernetes.io/name: frontend}
+  ports: [{name: http, port: 8080, targetPort: http}]
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: frontend
+  namespace: atlas
+spec:
+  replicas: 2
+  selector:
+    matchLabels: {app.kubernetes.io/name: frontend}
+  template:
+    metadata:
+      labels: {app.kubernetes.io/name: frontend, app.kubernetes.io/part-of: atlas}
+    spec:
+      containers:
+        - name: frontend
+          image: registry.example.com/atlas/frontend:1.0.9
+          imagePullPolicy: IfNotPresent
+          envFrom:
+            - configMapRef: {name: atlas-runtime}
+          ports: [{name: http, containerPort: 80}]
+          livenessProbe:
+            httpGet: {path: /edge-health, port: http}
+            periodSeconds: 10
+          readinessProbe:
+            httpGet: {path: /edge-health, port: http}
+            periodSeconds: 5
+          resources:
+            requests: {cpu: 50m, memory: 64Mi}
+            limits: {memory: 256Mi}
+

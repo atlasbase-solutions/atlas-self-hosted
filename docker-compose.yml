@@ -1,0 +1,364 @@
+name: atlas-self-hosted
+
+services:
+  edge:
+    build:
+      context: .
+      dockerfile: images/frontend/Dockerfile
+    image: atlas-self-hosted/frontend:${ATLAS_VERSION:-1.0.9}
+    env_file:
+      - env/edge.env
+    environment:
+      # One value for the edge and the portal (env/compose.env): the portal's
+      # first-run wizard waits for a certificate only in `direct` mode.
+      ATLAS_EDGE_MODE: ${ATLAS_EDGE_MODE:-direct}
+      ATLAS_INSTALLATION_FILE: /var/lib/atlas/installation/installation.json
+    ports:
+      # Plain HTTP: the ACME HTTP-01 challenge, redirects to HTTPS and the
+      # first-run wizard in `direct` mode; everything in `proxy` mode.
+      - "${ATLAS_HTTP_BIND:-0.0.0.0}:${ATLAS_HTTP_PORT:-80}:80"
+      # HTTPS in `direct` mode. In `proxy` mode set ATLAS_HTTPS_BIND=127.0.0.1
+      # and leave ATLAS_HTTPS_PORT empty (see env/compose.env.example).
+      - "${ATLAS_HTTPS_BIND:-0.0.0.0}:${ATLAS_HTTPS_PORT-443}:443"
+    volumes:
+      # Certificates and ACME account state. Back it up with the other volumes:
+      # losing it means issuing every certificate again, and certificate
+      # authorities limit how often that may happen.
+      - edge-data:/data
+      # The portal's projection of the installation's domains, read-only: the
+      # edge picks up a change within 5 seconds and reloads without a restart.
+      - atlas-installation:/var/lib/atlas/installation:ro
+    depends_on:
+      installation-volume-init:
+        condition: service_completed_successfully
+      portal:
+        condition: service_healthy
+      gateway:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "wget", "-qO-", "http://127.0.0.1:80/edge-health"]
+      interval: 10s
+      timeout: 3s
+      retries: 12
+    # Lets Caddy finish in-flight requests before the container is killed.
+    stop_grace_period: 30s
+    restart: unless-stopped
+    logging:
+      driver: json-file
+      options:
+        max-size: "50m"
+        max-file: "5"
+    networks:
+      - public
+      - private
+
+  portal:
+    build:
+      context: .
+      dockerfile: images/portal/Dockerfile
+    image: atlas-self-hosted/portal:${ATLAS_VERSION:-1.0.9}
+    env_file:
+      - env/portal.env
+    environment:
+      # The same value the edge gets (env/compose.env).
+      ATLAS_EDGE_MODE: ${ATLAS_EDGE_MODE:-direct}
+    volumes:
+      - portal-files:/var/lib/atlas/portal-files
+      - antifraud-feed:/var/lib/atlas/antifraud
+      # License installed from the portal (ATLAS_LICENSE_TOKEN_FILE in
+      # env/portal.env): the activation screen before sign-in and
+      # Settings → License write it here atomically. Portal mounts the volume
+      # read-write, Gateway read-only; `license-volume-init` hands it to
+      # uid 10001 before either service starts.
+      - atlas-license:/var/lib/atlas/license
+      # installation.json (ATLAS_INSTALLATION_FILE in env/portal.env): the
+      # portal writes its tenant registry's domains here for the edge and
+      # Gateway, at every start and after every first-run wizard step.
+      - atlas-installation:/var/lib/atlas/installation
+      # Uncomment to mount an offline license file for ATLAS_LICENSE_FILE
+      # (env/portal.env), used with ATLAS_LICENSE_ISOLATED=true. Mount the SAME
+      # file in the `gateway` service below: the license is per installation.
+      # - ./license/atlas.lic:/etc/atlas/license/atlas.lic:ro
+      # Uncomment together with ATLAS_LOG_SINK=both and ATLAS_LOG_DIR in
+      # env/portal.env to keep daily log files on disk. The service runs as
+      # uid 10001, so give it the directory before the first start:
+      #   docker compose run --rm --user 0 --entrypoint chown portal \
+      #     10001:10001 /var/log/atlas
+      # Rotation, compression and deletion stay with your archiving service.
+      # - portal-logs:/var/log/atlas
+    depends_on:
+      license-volume-init:
+        condition: service_completed_successfully
+      installation-volume-init:
+        condition: service_completed_successfully
+      portal-postgres:
+        condition: service_healthy
+      gateway-migrate:
+        condition: service_completed_successfully
+      kafka-init:
+        condition: service_completed_successfully
+    healthcheck:
+      test: ["CMD", "wget", "-qO-", "http://127.0.0.1:11082/health/ready"]
+      interval: 10s
+      timeout: 3s
+      retries: 20
+      start_period: 20s
+    restart: unless-stopped
+    logging:
+      driver: json-file
+      options:
+        max-size: "50m"
+        max-file: "5"
+    networks:
+      - private
+      - egress
+
+  gateway:
+    build:
+      context: .
+      dockerfile: images/gateway/Dockerfile
+    image: atlas-self-hosted/gateway:${ATLAS_VERSION:-1.0.9}
+    env_file:
+      - env/gateway.env
+    volumes:
+      - antifraud-feed:/var/lib/atlas/antifraud:ro
+      # The license the portal installed (ATLAS_LICENSE_TOKEN_FILE in
+      # env/gateway.env). Read-only: only the portal writes the license.
+      - atlas-license:/var/lib/atlas/license:ro
+      # The portal's projection of the installation's domains, read-only.
+      - atlas-installation:/var/lib/atlas/installation:ro
+    # To mount an offline license file for ATLAS_LICENSE_FILE (env/gateway.env),
+    # used with ATLAS_LICENSE_ISOLATED=true, add the same file the `portal`
+    # service above mounts:
+    #   volumes:
+    #     - ./license/atlas.lic:/etc/atlas/license/atlas.lic:ro
+    # The same volume line adds the file log channel (ATLAS_LOG_SINK=both plus
+    # ATLAS_LOG_DIR in env/gateway.env):
+    #   volumes:
+    #     - gateway-logs:/var/log/atlas
+    # The gateway runs as uid 10001 and a fresh volume belongs to root, so hand
+    # ownership over before the first start with a file channel.
+    depends_on:
+      license-volume-init:
+        condition: service_completed_successfully
+      installation-volume-init:
+        condition: service_completed_successfully
+      gateway-migrate:
+        condition: service_completed_successfully
+      redis:
+        condition: service_healthy
+      kafka-init:
+        condition: service_completed_successfully
+    healthcheck:
+      test: ["CMD", "wget", "-qO-", "http://127.0.0.1:8080/health/ready"]
+      interval: 10s
+      timeout: 3s
+      retries: 20
+      start_period: 20s
+    restart: unless-stopped
+    logging:
+      driver: json-file
+      options:
+        max-size: "50m"
+        max-file: "5"
+    networks:
+      - private
+      - egress
+
+  # One-shot: a fresh named volume belongs to root, while Portal and Gateway
+  # run as uid 10001. Hands the license directory to that uid (setgid, no
+  # access for others) so the portal can write the license file. Idempotent;
+  # runs on every `up` and exits.
+  license-volume-init:
+    image: alpine:3.24
+    user: "0"
+    network_mode: none
+    command: ["sh", "-c", "chown 10001:10001 /var/lib/atlas/license && chmod 2770 /var/lib/atlas/license"]
+    volumes:
+      - atlas-license:/var/lib/atlas/license
+
+  # One-shot, like license-volume-init: hands the installation.json directory
+  # to uid 10001 so the portal can write it; group and others may read it,
+  # because the edge reads it too.
+  installation-volume-init:
+    image: alpine:3.24
+    user: "0"
+    network_mode: none
+    command: ["sh", "-c", "chown 10001:10001 /var/lib/atlas/installation && chmod 2775 /var/lib/atlas/installation"]
+    volumes:
+      - atlas-installation:/var/lib/atlas/installation
+
+  gateway-migrate:
+    build:
+      context: .
+      dockerfile: images/gateway/Dockerfile
+    image: atlas-self-hosted/gateway:${ATLAS_VERSION:-1.0.9}
+    entrypoint: ["/usr/local/bin/atlas-migrate"]
+    command: ["-target=all", "-seed=false", "-timeout=2m"]
+    env_file:
+      - env/gateway.env
+    depends_on:
+      gateway-postgres:
+        condition: service_healthy
+      clickhouse:
+        condition: service_healthy
+    restart: "no"
+    logging:
+      driver: json-file
+      options:
+        max-size: "50m"
+        max-file: "5"
+    networks:
+      - private
+
+  portal-postgres:
+    image: postgres:18.6-alpine3.24
+    env_file:
+      - env/portal-postgres.env
+    volumes:
+      - portal-postgres-data:/var/lib/postgresql
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB}"]
+      interval: 5s
+      timeout: 3s
+      retries: 30
+    restart: unless-stopped
+    logging:
+      driver: json-file
+      options:
+        max-size: "50m"
+        max-file: "5"
+    networks:
+      - private
+
+  gateway-postgres:
+    image: postgres:18.6-alpine3.24
+    env_file:
+      - env/gateway-postgres.env
+    volumes:
+      - gateway-postgres-data:/var/lib/postgresql
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB}"]
+      interval: 5s
+      timeout: 3s
+      retries: 30
+    restart: unless-stopped
+    logging:
+      driver: json-file
+      options:
+        max-size: "50m"
+        max-file: "5"
+    networks:
+      - private
+
+  clickhouse:
+    image: clickhouse:26.6.8
+    env_file:
+      - env/clickhouse.env
+    volumes:
+      - clickhouse-data:/var/lib/clickhouse
+      - clickhouse-logs:/var/log/clickhouse-server
+      - ./config/clickhouse/custom-settings.xml:/etc/clickhouse-server/config.d/atlas-custom-settings.xml:ro
+    healthcheck:
+      test: ["CMD", "clickhouse-client", "--query", "SELECT 1"]
+      interval: 5s
+      timeout: 3s
+      retries: 40
+    restart: unless-stopped
+    logging:
+      driver: json-file
+      options:
+        max-size: "50m"
+        max-file: "5"
+    networks:
+      - private
+
+  redis:
+    image: redis:8.8.3-alpine3.23
+    command: ["redis-server", "--appendonly", "yes", "--appendfsync", "everysec"]
+    volumes:
+      - redis-data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 30
+    restart: unless-stopped
+    logging:
+      driver: json-file
+      options:
+        max-size: "50m"
+        max-file: "5"
+    networks:
+      - private
+
+  kafka:
+    image: apache/kafka:4.2.1
+    hostname: kafka
+    user: "0:0"
+    env_file:
+      - env/kafka.env
+    volumes:
+      - kafka-data:/var/lib/kafka/data
+    healthcheck:
+      test: ["CMD-SHELL", "/opt/kafka/bin/kafka-topics.sh --bootstrap-server localhost:19092 --list >/dev/null 2>&1"]
+      interval: 10s
+      timeout: 5s
+      retries: 30
+    restart: unless-stopped
+    logging:
+      driver: json-file
+      options:
+        max-size: "50m"
+        max-file: "5"
+    networks:
+      - private
+
+  kafka-init:
+    image: apache/kafka:4.2.1
+    entrypoint: ["/bin/sh", "/usr/local/bin/create-topics.sh"]
+    environment:
+      KAFKA_BOOTSTRAP_SERVERS: kafka:19092
+    volumes:
+      - ./config/kafka/create-topics.sh:/usr/local/bin/create-topics.sh:ro
+    depends_on:
+      kafka:
+        condition: service_healthy
+    restart: "no"
+    logging:
+      driver: json-file
+      options:
+        max-size: "50m"
+        max-file: "5"
+    networks:
+      - private
+
+volumes:
+  antifraud-feed:
+  # The license installed from the portal. Back it up with the other volumes:
+  # losing it means activating the installation again on the portal screen.
+  atlas-license:
+  # installation.json, the portal's projection of its tenant registry. Not a
+  # backup item: the portal rebuilds it from its database at every start.
+  atlas-installation:
+  # The edge's certificates and ACME account state (see the edge service).
+  edge-data:
+  portal-files:
+  # Uncomment together with the matching mounts above to keep daily log files.
+  # portal-logs:
+  # gateway-logs:
+  portal-postgres-data:
+  gateway-postgres-data:
+  clickhouse-data:
+  clickhouse-logs:
+  redis-data:
+  kafka-data:
+
+networks:
+  public:
+  egress:
+  private:
+    internal: true
+    ipam:
+      config:
+        - subnet: 172.29.0.0/24

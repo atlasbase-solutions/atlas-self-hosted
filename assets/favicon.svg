@@ -1,0 +1,25 @@
+<svg width="180" height="180" viewBox="0 0 180 180" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="title desc">
+  <title id="title">Atlas icon</title>
+  <desc id="desc">Atlas logo mark with a stylized white A and blue inner triangle</desc>
+  <g filter="url(#icon-glow)" transform="translate(-12.8 -15)">
+    <path d="M92.5 46H112.8L173.6 164H142.8L102.7 87.8L62.5 164H31.9L92.5 46Z" fill="url(#white-face)"/>
+    <path d="M102.7 89L132.3 146.7H121.4L102.7 110.3L83.5 146.7H72.6L102.7 89Z" fill="#020712"/>
+    <path d="M102.7 133.4L117.3 160.6H88L102.7 133.4Z" fill="#1F63FF"/>
+  </g>
+  <defs>
+    <linearGradient id="white-face" x1="90" y1="31" x2="90" y2="149" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#FFFFFF"/>
+      <stop offset="1" stop-color="#F3F5FA"/>
+    </linearGradient>
+    <filter id="icon-glow" x="13.1" y="25" width="153.7" height="130.6" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
+      <feFlood flood-opacity="0" result="BackgroundImageFix"/>
+      <feColorMatrix in="SourceAlpha" type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 127 0" result="hardAlpha"/>
+      <feOffset/>
+      <feGaussianBlur stdDeviation="3"/>
+      <feComposite in2="hardAlpha" operator="out"/>
+      <feColorMatrix type="matrix" values="0 0 0 0 0.7 0 0 0 0 0.78 0 0 0 0 1 0 0 0 0.24 0"/>
+      <feBlend mode="normal" in2="BackgroundImageFix" result="effect1_dropShadow"/>
+      <feBlend mode="normal" in="SourceGraphic" in2="effect1_dropShadow" result="shape"/>
+    </filter>
+  </defs>
+</svg>

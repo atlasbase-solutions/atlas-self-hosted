@@ -1,0 +1,180 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: atlas-runtime
+  namespace: atlas
+data:
+  ATLAS_PORTAL_HOST: portal.example.com
+  ATLAS_TRACKING_HOST: track.example.com
+  # The ingress terminates TLS, so the edge serves plain HTTP behind it and
+  # the portal's first-run wizard does not wait for a certificate.
+  ATLAS_EDGE_MODE: proxy
+  # The ingress controller's subnet: only it may report the client address and
+  # the original scheme to the edge.
+  ATLAS_EDGE_TRUSTED_PROXY_CIDR: 10.42.0.0/16
+  PORTAL_HTTP_ADDR: :11082
+  PORTAL_CORS_ORIGIN: https://portal.example.com
+  # The ingress controller's OWN subnet, which you must fill in: trusting the
+  # whole 10.0.0.0/8 meant trusting every pod in the cluster, and any of them
+  # could then claim an arbitrary client address. A network wider than /16 is
+  # refused at startup.
+  PORTAL_TRUSTED_PROXY_CIDRS: 10.42.0.0/16
+  # Subnet of an external TLS proxy in front of the ingress, if you run one.
+  PORTAL_EXTERNAL_PROXY_CIDRS: ""
+  PORTAL_SHUTDOWN_LAMEDUCK: 5s
+  PORTAL_SHUTDOWN_TIMEOUT: 10s
+  PORTAL_APP_URL: https://portal.example.com
+  PORTAL_APP_SCHEME: https
+  PORTAL_APP_PORT: ""
+  PORTAL_TRACKING_DOMAIN: track.example.com
+  PORTAL_TRACKING_PORT: ""
+  PORTAL_NETWORK_NAME: Atlas
+  PORTAL_DEFAULT_TZ: UTC
+  PORTAL_INVITE_TTL_HOURS: "168"
+  PORTAL_SETUP_TTL_HOURS: "72"
+  # A password ISSUED BY SOMEBODY ELSE is single-use and expires after this
+  # many hours; a password the person chose themselves never expires.
+  PORTAL_TEMP_PASSWORD_TTL_HOURS: "168"
+  PORTAL_FILE_STORAGE_DIR: /var/lib/atlas/portal-files
+  PORTAL_FILE_MAX_SIZE_MB: "50"
+  PORTAL_MAX_STORAGE_MB: "0"
+  PORTAL_MAX_PUBLISHERS: "0"
+  PORTAL_MAX_OFFERS: "0"
+  PORTAL_MAX_ADVERTISERS: "0"
+  PORTAL_PROMO_CODES_ENABLED: "true"
+  PORTAL_MAX_PROMO_CODES: "0"
+  PORTAL_API_PERSONAL_KEYS: "true"
+  PORTAL_API_SERVICE_KEYS: "true"
+  PORTAL_API_SERVICE_KEYS_MAX: "0"
+  PORTAL_API_RATE_LIMIT_RPM: "0"
+  PORTAL_API_RATE_LIMIT_RPM_TENANT: "0"
+  PORTAL_API_RATE_LIMIT_RPM_HEAVY: "0"
+  PORTAL_API_REQUIRE_HTTPS: "true"
+  PORTAL_ANALYTICS_TENANT_ID: "1"
+  PORTAL_KAFKA_BROKERS: kafka:19092
+  HTTP_ADDR: :8080
+  # Same rule as for the portal above: the ingress controller's own subnet.
+  TRUSTED_PROXY_CIDRS: 10.42.0.0/16
+  EXTERNAL_PROXY_CIDRS: ""
+  # Metrics listen on their own internal port and are not published by the
+  # ingress; point Prometheus at this port inside the cluster.
+  METRICS_ADDR: :9108
+  REDIS_ADDR: redis:6379
+  KAFKA_BROKERS: kafka:19092
+  CONFIG_CONSUMER_GROUP_ID: gateway-config
+  CONFIG_CONSUMER_ASSIGNMENT_TIMEOUT: 3m
+  EVENT_SINK: kafka
+  DATACENTER_ASN_FILE: /usr/share/atlas-gateway/enrichment/datacenter-asns.txt
+  UA_REGEXES_FILE: /usr/share/atlas-gateway/enrichment/uap-core-v0.18.0-regexes.yaml
+  HTTP_READ_TIMEOUT: 5s
+  HTTP_WRITE_TIMEOUT: 10s
+  HTTP_SHUTDOWN_TIMEOUT: 10s
+  SHUTDOWN_LAMEDUCK: 5s
+  DEPENDENCY_TIMEOUT: 2s
+  KAFKA_PRODUCE_TIMEOUT: 200ms
+  KAFKA_BATCH_SIZE: "500"
+  KAFKA_BATCH_TIMEOUT: 5ms
+  SNAPSHOT_RECONCILE_INTERVAL: 60s
+  CLICK_CONTEXT_TTL: 2160h
+  ATTRIBUTION_WINDOW: 2160h
+  UNIQUE_CLICK_WINDOW: 24h
+  UNIQUE_IMPRESSION_WINDOW: 1h
+  PUBLISHER_ACCESS_TTL: 5m
+  PROMO_CACHE_TTL: 5m
+  BINDING_CACHE_TTL: 720h
+  CONSUMER_LAG_INTERVAL: 30s
+  HMAC_TIMESTAMP_WINDOW: 5m
+  NONCE_TTL: 10m
+  CLICK_RATE_LIMIT_RPS: "1000"
+  # The CPM pixel has its own ceiling: impressions outnumber clicks by orders
+  # of magnitude, so one shared value cannot serve both.
+  IMPRESSION_RATE_LIMIT_RPS: "2000"
+  # Per tenant and offer; the next one is the early per-client-address ceiling
+  # checked before a postback is parsed (0 turns it off).
+  POSTBACK_RATE_LIMIT_RPS: "100"
+  POSTBACK_IP_RATE_LIMIT_RPS: "300"
+  POSTBACK_REJECTED_EVENT_LIMIT_PER_MINUTE: "10"
+  CLICK_SPILL_ENABLED: "true"
+  IMPRESSION_SPILL_ENABLED: "true"
+  IMPRESSION_SPILL_QUEUE_LIMIT: "500000"
+  OUTBOUND_NO_RECIPIENT_WINDOW: 10m
+  OUTBOUND_LEASE_REAPER_INTERVAL: 30s
+  OUTBOUND_LEASE_REAPER_BATCH_SIZE: "500"
+  # Replicas x pool size must fit into the PostgreSQL max_connections with
+  # room left for migrations and operator commands.
+  PG_POOL_MAX_CONNS: "20"
+  # Extra destination networks an outbound postback may reach. Empty is the
+  # normal state: private, loopback, link-local and multicast addresses are
+  # refused, so a postback URL cannot reach the cluster network or the cloud
+  # metadata endpoint. Never use 0.0.0.0/0 — that disables the filter.
+  OUTBOUND_ALLOWED_TARGET_CIDRS: ""
+  # --- Logging -------------------------------------------------------------
+  # Keep the file channel OFF in Kubernetes: a daily file would land in the
+  # Pod's ephemeral storage, count against its storage limit and disappear
+  # with the Pod. Let the cluster log collector read stdout instead.
+  ATLAS_LOG_SINK: stdout
+  ATLAS_LOG_FORMAT: json
+  ATLAS_LOG_LEVEL: info
+  ATLAS_LOG_DIR: ""
+  ATLAS_LOG_INSTANCE: ""
+  ATLAS_LOG_TIME_ZONE: UTC
+  ATLAS_LOG_KEEP_DAYS: "0"
+  # HTTP access log of the intake stream: off (default), sampled or full.
+  # At 5000 RPS one replica writes roughly 1.5 MB/s into the collector.
+  ATLAS_ACCESS_LOG: "off"
+  ATLAS_ACCESS_LOG_SAMPLE: "100"
+  # Self-hosted license, non-secret part (see README.md "Licensing"; the
+  # license itself is ATLAS_LICENSE_TOKEN in 02-secrets.example.yaml). Portal
+  # and Gateway read the same ConfigMap and Secret, so the values stay in sync.
+  # Set ATLAS_LICENSE_ISOLATED to "true" only for a cluster with no outbound
+  # internet access, together with an offline license file from Atlas.
+  ATLAS_LICENSE_ISOLATED: "false"
+  # Required as soon as a license is supplied: set them to exactly the domains
+  # the license was issued for (normally ATLAS_PORTAL_HOST / ATLAS_TRACKING_HOST
+  # above). Pods with a license and no declared domains refuse to start.
+  ATLAS_LICENSE_PORTAL_DOMAIN: ""
+  ATLAS_LICENSE_TRACKING_DOMAIN: ""
+  ATLAS_LICENSE_TRACKING_DOMAINS: ""
+  ATLAS_LICENSE_POSTBACK_DOMAIN: ""
+  ATLAS_ANTIFRAUD_FEED_DIR: /var/lib/atlas/antifraud/current
+  ANTIFRAUD_FEED_RELOAD_INTERVAL: 5m
+  # Path of a mounted offline license file — set it only together with the
+  # atlas-license-file Secret and mounts described in k8s/README.md
+  # "License delivery". Leave empty to use ATLAS_LICENSE_TOKEN.
+  ATLAS_LICENSE_FILE: ""
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: clickhouse-settings
+  namespace: atlas
+data:
+  atlas-custom-settings.xml: |
+    <clickhouse>
+      <custom_settings_prefixes>SQL_</custom_settings_prefixes>
+    </clickhouse>
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: kafka-topics
+  namespace: atlas
+data:
+  create-topics.sh: |
+    #!/bin/sh
+    set -eu
+    create_delete() {
+      /opt/kafka/bin/kafka-topics.sh --bootstrap-server kafka:19092 --create --if-not-exists --topic "$1" --partitions "$2" --replication-factor 1 --config cleanup.policy=delete --config retention.ms="$3"
+    }
+    create_delete clicks 24 259200000
+    create_delete lp-clicks 12 259200000
+    create_delete impressions 24 259200000
+    create_delete conversions-raw 24 604800000
+    create_delete postbacks-outbound 12 604800000
+    create_delete postbacks-in 12 259200000
+    create_delete outbound-requests 12 259200000
+    create_delete postbacks-outbound-retry 12 604800000
+    create_delete postbacks-outbound-dlq 6 2592000000
+    create_delete config-quarantine 6 2592000000
+    create_delete events-quarantine 6 2592000000
+    /opt/kafka/bin/kafka-topics.sh --bootstrap-server kafka:19092 --create --if-not-exists --topic config-changes --partitions 6 --replication-factor 1 --config cleanup.policy=compact --config delete.retention.ms=604800000 --config min.cleanable.dirty.ratio=0.01 --config segment.ms=3600000

@@ -1,0 +1,27 @@
+# Working configuration: holds generated secrets, never committed.
+.env
+env/*.env
+!env/*.env.example
+k8s/02-secrets.yaml
+
+# License material. The compose comments suggest mounting ./license/atlas.lic;
+# a license is issued to one customer and must never be published.
+license/
+*.atlaslic
+*.lic
+
+# Keys and certificates an operator may keep next to the checkout.
+*.pem
+*.key
+*.crt
+*.p12
+
+# Local state and editor files.
+backups/
+downloads/
+tmp/
+*.log
+*.bak
+.DS_Store
+.idea/
+.vscode/

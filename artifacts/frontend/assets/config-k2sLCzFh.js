@@ -1,0 +1,1 @@
+var e=`11082`;function t(){if(typeof window>`u`)return`http://localhost:${e}`;let{protocol:t,hostname:n,port:r}=window.location;return r===``||r===`80`||r===`443`?`${t}//${n}`:`${t}//${n}:${e}`}var n=t();function r(e,t){return``}export{r as n,n as t};

@@ -1,0 +1,66 @@
+# Autonomous systems of cloud and hosting providers. A click from one of them
+# gets is_datacenter = true and is treated as a bot: it is not unique, does not
+# consume caps or the traffic quota, and is not paid per click.
+#
+# The list is curated by Atlas, checked against the RIPE NCC registry, and
+# updated with each release. Networks through which real people browse (iCloud
+# Private Relay, Cloudflare WARP, browser proxies) are deliberately absent.
+#
+# An operator may add their own numbers, one per line; `#` starts a comment.
+# In the Docker Compose distribution the file is copied into the gateway image,
+# so a change takes effect after `make up` rebuilds it.
+
+8075  # MICROSOFT-CORP-MSN-AS-BLOCK - Microsoft Corporation
+8560  # IONOS-AS IONOS SE
+8987  # GOVCLOUD - Amazon
+9009  # M247 M247 Europe SRL
+9123  # TimeWeb-AS JSC "TIMEWEB"
+12876  # AS12876 Scaleway SAS
+14061  # DIGITALOCEAN-ASN - DigitalOcean, LLC
+14618  # AMAZON-AES - Amazon.com, Inc.
+16276  # OVH OVH SAS
+16509  # AMAZON-02 - Amazon.com, Inc.
+19318  # IS-AS-1 - Interserver, Inc
+20473  # AS-VULTR - The Constant Company, LLC
+23470  # RELIABLESITE - ReliableSite.Net LLC
+24940  # HETZNER-AS Hetzner Online GmbH
+25820  # IT7NET - IT7 Networks Inc
+26496  # AS-26496-GO-DADDY-COM-LLC - GoDaddy.com, LLC
+28753  # LEASEWEB-DE-FRA-10 Leaseweb Deutschland GmbH
+29802  # HVC-AS - HIVELOCITY, Inc.
+30633  # LEASEWEB-USA-WDC - Leaseweb USA, Inc.
+31898  # ORACLE-BMC-31898 - Oracle Corporation
+32613  # IWEB-AS - Leaseweb Canada Inc.
+35916  # MULTA-ASN1 - MULTACOM CORPORATION
+36352  # AS-COLOCROSSING - HostPapa
+37963  # ALIBABA-CN-NET - Hangzhou Alibaba Advertising Co.,Ltd.
+40021  # CONTABO-40021 - Contabo Inc.
+43350  # NFORCE NForce Entertainment B.V.
+45090  # TENCENT-NET-AP - Shenzhen Tencent Computer Systems Company Limited
+45102  # ALIBABA-CN-NET - Alibaba (US) Technology Co., Ltd.
+46562  # PERFORMIVE - Performive LLC
+46606  # UNIFIEDLAYER-AS-1 - Unified Layer
+47583  # AS-HOSTINGER Hostinger International Limited
+49505  # SELECTEL JSC Selectel
+49981  # WorldStream WorldStream B.V.
+50673  # Serverius-as Serverius Holding B.V.
+51167  # CONTABO Contabo GmbH
+51852  # PLI-AS Private Layer INC
+53667  # PONYNET - FranTech Solutions
+59253  # LEASEWEB-APAC-SIN-11 - LEASEWEB SINGAPORE PTE. LTD.
+60068  # CDN77 Datacamp Limited
+60781  # LEASEWEB-NL-AMS-01 LeaseWeb Netherlands B.V.
+62240  # Clouvider Clouvider Limited
+63949  # AKAMAI-LINODE-AP - Akamai Connected Cloud
+132203  # TENCENT-NET-AP-CN - Tencent Building, Kejizhongyi Avenue
+141995  # CAPL-AS-AP - Contabo Asia Private Limited
+197540  # netcup-AS netcup GmbH
+197695  # AS-REGRU "Domain names registrar REG.RU", Ltd
+200019  # AlexHost ALEXHOST SRL
+200350  # YandexCloud Yandex.Cloud LLC
+202053  # UPCLOUD UpCloud Ltd
+210644  # AEZA-AS AEZA GROUP LLC
+212238  # CDNEXT Datacamp Limited
+213230  # HETZNER-CLOUD2-AS Hetzner Online GmbH
+396982  # GOOGLE-CLOUD-PLATFORM - Google LLC
+398101  # GO-DADDY-COM-LLC - GoDaddy.com, LLC

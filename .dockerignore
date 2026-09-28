@@ -1,0 +1,8 @@
+*
+!artifacts/
+!artifacts/**
+!config/
+!config/**
+!images/
+!images/**
+

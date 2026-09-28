@@ -1,0 +1,7 @@
+# Shell scripts run inside Linux containers and hosts: always LF.
+*.sh text eol=lf
+Makefile text eol=lf
+
+artifacts/linux-amd64/* binary
+*.png binary
+*.woff2 binary

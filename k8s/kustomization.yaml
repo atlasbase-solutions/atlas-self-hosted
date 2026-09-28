@@ -1,0 +1,21 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+namespace: atlas
+resources:
+  - 00-namespace.yaml
+  - 01-config.yaml
+  - 03-data.yaml
+  - 04-jobs.yaml
+  - 05-apps.yaml
+  - 06-ingress.yaml
+images:
+  - name: registry.example.com/atlas/portal
+    newName: registry.example.com/atlas/portal
+    newTag: 1.0.9
+  - name: registry.example.com/atlas/gateway
+    newName: registry.example.com/atlas/gateway
+    newTag: 1.0.9
+  - name: registry.example.com/atlas/frontend
+    newName: registry.example.com/atlas/frontend
+    newTag: 1.0.9
+

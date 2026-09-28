@@ -1,0 +1,16 @@
+<?xml version="1.0"?>
+<!--
+  ClickHouse server override for the Atlas analytics store.
+
+  Declares the custom-setting prefix used for tenant isolation. The Portal
+  reads this ClickHouse for its reports and scopes every query with a row
+  policy keyed on the custom setting `SQL_tenant_id`. ClickHouse rejects any
+  custom setting whose name does not start with a declared prefix, so without
+  this file the Portal's report queries fail with
+  "unknown setting SQL_tenant_id".
+
+  The Gateway only writes to this store and does not need the setting itself.
+-->
+<clickhouse>
+    <custom_settings_prefixes>SQL_</custom_settings_prefixes>
+</clickhouse>
