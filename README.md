@@ -403,7 +403,7 @@ The installer asks no questions. It:
 
 1. checks the server (a smaller one gets a warning, not a refusal; in `direct` mode ports 80 and 443 must be free);
 2. installs Docker Engine and the Docker Compose plugin from Docker's official apt repository when they are not already available — it changes nothing else on the host;
-3. downloads this distribution, verifies every binary against `SHA256SUMS` and the release index against the Atlas release key, and refuses to continue if the distribution is not signed by Atlas;
+3. downloads this distribution, verifies every binary against `SHA256SUMS` and every file of the distribution against the release index signed with the Atlas release key, and refuses to continue if the distribution is not signed by Atlas or any file is changed, missing or not listed in the index;
 4. creates `/opt/atlas`, generates independent random database and encryption secrets and writes the service env files (readable by root only);
 5. builds the images, starts the Compose stack and checks it from inside the server;
 6. registers a one-time **setup code** and saves the wizard link `http://<server IP>/setup#code=...` to `/root/atlas-setup.txt` (readable by root only). The link is also printed when you run the command in a terminal, and the login message reminds you about it until setup is complete.
@@ -461,7 +461,7 @@ The one-line installer is for a new single-server installation. Use the manual p
 make verify-release
 ```
 
-This checks every binary against `SHA256SUMS` and the signed release index against the Atlas release key, and prints the key fingerprint. Compare it with the one under [Release artifacts and integrity](#release-artifacts-and-integrity).
+This checks every binary against `SHA256SUMS` and every file of the distribution against the signed release index, and prints the key fingerprint. Compare it with the one under [Release artifacts and integrity](#release-artifacts-and-integrity).
 
 ### 2. Create the working env files
 
@@ -598,7 +598,7 @@ The `config-quarantine` Kafka topic keeps configuration events the Gateway could
 
 ```sh
 docker compose --env-file env/compose.env run --rm \
-  --entrypoint atlas-update-check portal -installed 1.0.9
+  --entrypoint atlas-update-check portal -installed 1.0.10
 ```
 
 The tool presents the installation's license to Atlas, verifies the signed answer and reports the available release. To download it, mount an operator-owned writable directory and add `-download /downloads`. It installs and restarts nothing; read `UPGRADE.md` before replacing a running installation. The update channel serves releases only against a valid license, and an isolated installation cannot use it.
@@ -829,7 +829,7 @@ In short: read `UPGRADE.md` and `CHANGELOG.md` for every release you are skippin
 - Outbound requests to user-entered addresses cannot reach internal networks unless the operator allows them.
 - Trusted proxy ranges must be narrow and explicit.
 - The binaries are built as the self-hosted edition and verified at release time to contain no vendor-side code.
-- The release is signed offline with a dedicated Atlas release key, verified by the installer and by `make verify-release`.
+- Every file of the release — binaries, images, compose, edge configuration, scripts and the portal web application — is signed with a dedicated Atlas release key, verified by the installer and by `make verify-release`.
 
 The reference stack is not a substitute for your own hardening baseline: image scanning, host patching, network policy, secret rotation, audit retention and incident response remain yours. See [SECURITY.md](SECURITY.md) for how to report a vulnerability.
 
@@ -929,7 +929,7 @@ sha256sum -c SHA256SUMS
 ./artifacts/linux-amd64/atlas-update-check -verify .
 ```
 
-`SHA256SUMS` travels inside the distribution, so on its own it proves only that the files are intact. The second command answers who built them: it checks `release-index.sig` — the list of files with their sizes and checksums, signed offline with the Atlas release key — against the files on disk, and prints the version and the key fingerprint. That key signs nothing but release content: it grants no rights over the product and is not the key that signs licenses.
+`SHA256SUMS` travels inside the distribution, so on its own it proves only that the files are intact. The second command answers who built them: it checks `release-index.sig` — the list of every file of the distribution with its size and checksum, signed with the Atlas release key — against the files on disk, and prints the version and the key fingerprint. A changed or missing file, or a file the index does not list, fails the check: an unlisted `docker-compose.override.yml`, for example, would otherwise be picked up by Docker Compose. Your own files are not checked — `.env`, `env/*.env`, `license/`, `backups/`, `downloads/`, `tmp/`, keys and certificates — so verify a freshly unpacked copy and keep anything else of yours outside the distribution directory. That key signs nothing but release content: it grants no rights over the product and is not the key that signs licenses.
 
 **Atlas release key fingerprint: `51fe2e81bd1cd484`**
 

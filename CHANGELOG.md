@@ -4,6 +4,18 @@ All notable changes to the Atlas Self-Hosted distribution are documented here, n
 
 Version 1.0.9 is the first public release of this repository. Its section lists every customer-facing change made since the 1.0.0 baseline, so that an installation made from an earlier private build can see everything it is about to receive.
 
+## 1.0.10 — 2026-09-29
+
+Changes since 1.0.9.
+
+### Security
+
+- The release signature now covers every file of the distribution — Dockerfiles, `docker-compose.yml`, edge configuration, scripts, Kubernetes manifests and the portal web application — not only the binaries. `atlas-update-check -verify` and the installer refuse a distribution with a changed, missing or unlisted file; your own files (`.env`, `env/*.env`, `license/`, `backups/`, `downloads/`, `tmp/`, keys and certificates) are not checked.
+
+### Fixes
+
+- A cloned campaign or offer is now named with a copy suffix in the portal's interface language instead of a fixed Russian suffix for campaigns and a fixed English one for offers.
+
 ## 1.0.9 — 2026-09-28
 
 ### Security

@@ -1,8 +1,8 @@
 {
   "key_id": "",
   "product": "atlas-self-hosted",
-  "version": "1.0.9",
-  "published_at": "2026-09-28T09:36:07Z",
+  "version": "1.0.10",
+  "published_at": "2026-09-29T04:40:26Z",
   "artifacts": [
     {
       "name": "atlas-config-backfill",
@@ -12,7 +12,7 @@
     {
       "name": "atlas-gateway",
       "size": 48283808,
-      "sha256": "6bd06dbfebf30747d85b4caebb8c782fa94111f5dd2c4eb07c872186294ce1c0"
+      "sha256": "fff9fc6c207591d44e0bf76dd784c8cb5ed801bb724421e287b35fa65c10627c"
     },
     {
       "name": "atlas-migrate",
@@ -22,17 +22,17 @@
     {
       "name": "atlas-outbound-deliveries",
       "size": 12161184,
-      "sha256": "f07a5c3aecdf08bd78cb1a08e3d0bea9a817a197c480789e8de737f503678f6e"
+      "sha256": "9983c575eaaf4ef6e7dac03c76387ac1046afa1f0d686da30bf6db305fb284c1"
     },
     {
       "name": "atlas-payouts-quarantine",
       "size": 15462560,
-      "sha256": "2f033b9b738ee6ced96dc8cf8591f85c9c187c3cd6c39cbe7aadc404cfc93161"
+      "sha256": "ca212480ae9c1da7fe4171ec1ff347df6f77f0921afb29240047e15c5b7026be"
     },
     {
       "name": "atlas-portal",
       "size": 32071840,
-      "sha256": "355dbb0fed07595cd93b474d8f70878f0b01be1cd9d26f904e642b260286aa72"
+      "sha256": "76a86d0cecb14f6506adc665e2a35db2e326e7ec150233f36732060abe83fcc5"
     },
     {
       "name": "atlas-reset-owner-password",
@@ -51,8 +51,425 @@
     },
     {
       "name": "atlas-update-check",
-      "size": 6693024,
-      "sha256": "09907a2af473e075f757783e65feda45643673da616b2b5895acbd3475d4603e"
+      "size": 6733984,
+      "sha256": "cd8a5efc82509ab2b33dcf5047849ad517aae38be60c2aea4f68cabc8d4d8534"
+    }
+  ],
+  "files": [
+    {
+      "path": ".dockerignore",
+      "size": 69,
+      "sha256": "7cfa18b51b4ba127122d35dcecb3a71f74f307efa335a15b0154a5bce83738f5"
+    },
+    {
+      "path": ".gitattributes",
+      "size": 164,
+      "sha256": "568c3a4a1ef580876ad263888915c4be738f827632368f7179f997ee2768df1e"
+    },
+    {
+      "path": ".gitignore",
+      "size": 482,
+      "sha256": "7174a5ca4fc0483a5962066e6a09b9473416432847b7c5cb366213a924d2668d"
+    },
+    {
+      "path": "CHANGELOG.md",
+      "size": 18164,
+      "sha256": "77a3ab60d03b7fc713746f4f6ba64374946222f0ed070a08b988013006f6e529"
+    },
+    {
+      "path": "LICENSE.md",
+      "size": 1067,
+      "sha256": "735f1a125100b1d16a818abb8f4fe1ddc53bec172977e92d3c863467b458324c"
+    },
+    {
+      "path": "Makefile",
+      "size": 991,
+      "sha256": "1ff448b91f91db33f6e0b8c22858f089a6e05b363911237fd89ccc80d989ba5f"
+    },
+    {
+      "path": "README.md",
+      "size": 75336,
+      "sha256": "d31adb8c2ff1a0731e106d79d247f69e904ad0f26640ef335645cea4af3ae66f"
+    },
+    {
+      "path": "SECURITY.md",
+      "size": 2366,
+      "sha256": "d22e43339a935d344fa43621d5de154f93215fc42b3c287ca0a3fdfb8544931c"
+    },
+    {
+      "path": "SHA256SUMS",
+      "size": 1078,
+      "sha256": "94627e6c2d5fab46bb2f9998f44304bbeb8a1364f6cb0774225ebb7de94b5737"
+    },
+    {
+      "path": "THIRD_PARTY_NOTICES.md",
+      "size": 139707,
+      "sha256": "30383a3310de17c802446eec240d5ae262c7eff015b82cafecf391490a0b56c7"
+    },
+    {
+      "path": "UPGRADE.md",
+      "size": 17874,
+      "sha256": "ca478130392bd5616b0f72d3fc2cc38a4b4be7817f2e8350a50833e7bf57bf7d"
+    },
+    {
+      "path": "artifacts/frontend/assets/LicenseActivationPanel-CkvxYi44.js",
+      "size": 2570691,
+      "sha256": "baad39e70a71a2d17d385c756a3406293e09e2ef40e221332ac95f60b59346a3"
+    },
+    {
+      "path": "artifacts/frontend/assets/LicenseActivationPanel-dhuXpHyo.css",
+      "size": 20554,
+      "sha256": "700e9f5fcfea36b10f9e7aa7d4c09efa0b270c7ba55c339ce34fe02e27e2a578"
+    },
+    {
+      "path": "artifacts/frontend/assets/SetupWizard-BcRJSEsQ.css",
+      "size": 3165,
+      "sha256": "b1edf7d26d9d951e796d53b5aaaf3d039411ee78c79505f1fe276d0c897bda5a"
+    },
+    {
+      "path": "artifacts/frontend/assets/SetupWizard-CP0B9Lyq.js",
+      "size": 14921,
+      "sha256": "1890bbaecb19b05b36939f192020d9536a97b1d4804923e0b4d2685444b8d485"
+    },
+    {
+      "path": "artifacts/frontend/assets/api-BWaNqwxv.js",
+      "size": 1244,
+      "sha256": "f9cb2f4b92891777acfcda38526ec1c1e957f4f2906e47b62f0902ee4cbb380d"
+    },
+    {
+      "path": "artifacts/frontend/assets/config-k2sLCzFh.js",
+      "size": 251,
+      "sha256": "dba5cb9dbfddb3c8fdb7b6301639615aae9d8a074d688158f24c15aee2f4a5dd"
+    },
+    {
+      "path": "artifacts/frontend/assets/fonts/1e8edb2fc100b7f7.woff2",
+      "size": 18748,
+      "sha256": "71d5ee93cc1e9f1d520a3a8b66456de18c7879d8df09d57fcd2eaff75fef0075"
+    },
+    {
+      "path": "artifacts/frontend/assets/fonts/4c2d4a14f23a8ed5.woff2",
+      "size": 10252,
+      "sha256": "5c66f9e07e90c6d4ac4922cc68d60de26c17b1858e677fb5e603fce3952b3ff2"
+    },
+    {
+      "path": "artifacts/frontend/assets/fonts/6b5e37b52d26eeac.woff2",
+      "size": 1640,
+      "sha256": "62213be8a78b42f1e29d1452d91e2f8b3e745572a9dd98d3941e39fa00b37d76"
+    },
+    {
+      "path": "artifacts/frontend/assets/fonts/6d0a674525fee3dd.woff2",
+      "size": 11232,
+      "sha256": "6e9e020a25f9b56d418f2c085b1d3c09725a4da23fe693a5b463064606732190"
+    },
+    {
+      "path": "artifacts/frontend/assets/fonts/95b9ea830580b57e.woff2",
+      "size": 25960,
+      "sha256": "ca157063339ac4ad418f214f3abfed119b0798ab4d377386ce5c9e5a7a435ebd"
+    },
+    {
+      "path": "artifacts/frontend/assets/fonts/99e400330f36ae77.woff2",
+      "size": 6836,
+      "sha256": "0a557721b1f8b36d3f3f84442689a71ca4a744300abcb46a1953f51bfc663b66"
+    },
+    {
+      "path": "artifacts/frontend/assets/fonts/a9d11b3ffe7aa537.woff2",
+      "size": 85068,
+      "sha256": "34b9c504cab7a73e37b746343a449132e56cf7b5481af2cb81dc74dcff25c956"
+    },
+    {
+      "path": "artifacts/frontend/assets/fonts/b19c2080652a3c2b.woff2",
+      "size": 11624,
+      "sha256": "db5ff4db83e580426280e9337a58dc57d3a83784a1b03ad80914651594441d52"
+    },
+    {
+      "path": "artifacts/frontend/assets/fonts/c4064400db3750ce.woff2",
+      "size": 5888,
+      "sha256": "c89b9cc0bc6262bd4f8d8494b6961601f3aefa829d08c2e3635f4d501d3a47c2"
+    },
+    {
+      "path": "artifacts/frontend/assets/fonts/cc27b30471250057.woff2",
+      "size": 31432,
+      "sha256": "83c005d49d8a6a50474c73a5a36ac0468076e9c4a29da7bdb14995d80560a5be"
+    },
+    {
+      "path": "artifacts/frontend/assets/fonts/dbc85b0dfbaaa315.woff2",
+      "size": 18996,
+      "sha256": "1be3448e292fbf05ffe176fe1e43f135013d50b1e7d324ad1a558f623d3bb6f6"
+    },
+    {
+      "path": "artifacts/frontend/assets/fonts/e3237528af752eed.woff2",
+      "size": 48256,
+      "sha256": "3100e775e8616cd2611beecfa23a4263d7037586789b43f035236a2e6fbd4c62"
+    },
+    {
+      "path": "artifacts/frontend/assets/fonts/eb83d8d40af4411f.woff2",
+      "size": 8872,
+      "sha256": "e17cfd15fb96909d64095015f958207063a0c07191da3512df7d560a781aebdf"
+    },
+    {
+      "path": "artifacts/frontend/assets/fonts/fonts.css",
+      "size": 12068,
+      "sha256": "6d785eeb604d73ef1907f1d83c2f976f8dd51385bec347345dcc826dd4e6cace"
+    },
+    {
+      "path": "artifacts/frontend/assets/index-D78Zdxbq.js",
+      "size": 1264654,
+      "sha256": "5b698b7b9883994d525d5b7c2d908491f4cff889348720b43711ad77e2fcbea0"
+    },
+    {
+      "path": "artifacts/frontend/assets/index-jYKPYNSa.css",
+      "size": 273612,
+      "sha256": "e02ff4cdc2da74c58e12a794579656de0eb0109e3b5ec425830aa5f60e3b179a"
+    },
+    {
+      "path": "artifacts/frontend/assets/probe-Cbht3rzZ.js",
+      "size": 228,
+      "sha256": "6447cd2aad8b158ad7d5292b66d877718e1dab0496ce1946b83c18ad19097cc9"
+    },
+    {
+      "path": "artifacts/frontend/favicon.png",
+      "size": 42341,
+      "sha256": "c1f726e20df6593a4c4a0a74a421f61f8e6dbfae761fcb99096eae2d36f5d0f0"
+    },
+    {
+      "path": "artifacts/frontend/favicon.svg",
+      "size": 1560,
+      "sha256": "bce3ef03afa26a94d450cbaf7133bfc711d7d305c32bde5fc246f7cab3863857"
+    },
+    {
+      "path": "artifacts/frontend/index.html",
+      "size": 733,
+      "sha256": "f6fe590217f51e5c889e08c98f2b55e507ddd119b925c0c0d780d9a27ef38450"
+    },
+    {
+      "path": "artifacts/linux-amd64/atlas-config-backfill",
+      "size": 10305696,
+      "sha256": "30b5ff4cb2e2f580214f7614a3bd4420588d832f8fab7b02f412e29dbc73d793"
+    },
+    {
+      "path": "artifacts/linux-amd64/atlas-gateway",
+      "size": 48283808,
+      "sha256": "fff9fc6c207591d44e0bf76dd784c8cb5ed801bb724421e287b35fa65c10627c"
+    },
+    {
+      "path": "artifacts/linux-amd64/atlas-migrate",
+      "size": 11067552,
+      "sha256": "d400be202a700bf00fa2c19bce52a26377bf900a359feb7abf476d77fb481e20"
+    },
+    {
+      "path": "artifacts/linux-amd64/atlas-outbound-deliveries",
+      "size": 12161184,
+      "sha256": "9983c575eaaf4ef6e7dac03c76387ac1046afa1f0d686da30bf6db305fb284c1"
+    },
+    {
+      "path": "artifacts/linux-amd64/atlas-payouts-quarantine",
+      "size": 15462560,
+      "sha256": "ca212480ae9c1da7fe4171ec1ff347df6f77f0921afb29240047e15c5b7026be"
+    },
+    {
+      "path": "artifacts/linux-amd64/atlas-portal",
+      "size": 32071840,
+      "sha256": "76a86d0cecb14f6506adc665e2a35db2e326e7ec150233f36732060abe83fcc5"
+    },
+    {
+      "path": "artifacts/linux-amd64/atlas-reset-owner-password",
+      "size": 10350752,
+      "sha256": "f5e7f635b52f1e64b311b8a01d528daeae86176af4b2324b423fdab75224c343"
+    },
+    {
+      "path": "artifacts/linux-amd64/atlas-rotate-secrets",
+      "size": 10375328,
+      "sha256": "57a45f9603e512d776c34798e6110e5faad85fc7840f995bce166761f4c3d74c"
+    },
+    {
+      "path": "artifacts/linux-amd64/atlas-setup-code",
+      "size": 10272928,
+      "sha256": "cdd3f2b334579f1e413e47df4f6ed4d03108353a169086837bf9a42ed5baa66c"
+    },
+    {
+      "path": "artifacts/linux-amd64/atlas-update-check",
+      "size": 6733984,
+      "sha256": "cd8a5efc82509ab2b33dcf5047849ad517aae38be60c2aea4f68cabc8d4d8534"
+    },
+    {
+      "path": "assets/atlas-logo.svg",
+      "size": 2644,
+      "sha256": "b04f05c52e3dd37161de34084eb5d4eb6fc38c984be310146e9d898f30b8e4e0"
+    },
+    {
+      "path": "assets/favicon.svg",
+      "size": 1560,
+      "sha256": "bce3ef03afa26a94d450cbaf7133bfc711d7d305c32bde5fc246f7cab3863857"
+    },
+    {
+      "path": "config/caddy/entrypoint.sh",
+      "size": 3029,
+      "sha256": "3650d27facea4f87b4079e0e74186a7e0d8c63c230781c5ac9f047cb4ab80e8e"
+    },
+    {
+      "path": "config/caddy/render.sh",
+      "size": 10312,
+      "sha256": "e8a8f8add4ba6e195383982b14fc2309ef2a47d0e3d8177858ee6676fda61115"
+    },
+    {
+      "path": "config/clickhouse/custom-settings.xml",
+      "size": 649,
+      "sha256": "6586ff5c1ffbc892119318acf2a470d869bfe47eb9e58d41ed3635a12d7eab52"
+    },
+    {
+      "path": "config/enrichment/datacenter-asns.txt",
+      "size": 2955,
+      "sha256": "e58ecf3ca8089f36180c32f088ad6b7c1fce114c186e2348550f9886083ac5b8"
+    },
+    {
+      "path": "config/enrichment/uap-core-v0.18.0-regexes.yaml",
+      "size": 205558,
+      "sha256": "274c3774ed0c6baca226197d2f978bfc0621720171895475a3775f0b9f9549ba"
+    },
+    {
+      "path": "config/kafka/create-topics.sh",
+      "size": 4733,
+      "sha256": "e7c555ade188b976af26f55c087f5b324542ebaf4252fc21cdff4e1f43e5205e"
+    },
+    {
+      "path": "docker-compose.yml",
+      "size": 11727,
+      "sha256": "3a52a13ef0055e141b7f2c9b2d4e68510ffdc5686e3ef96d45e6ef4664815038"
+    },
+    {
+      "path": "docs/backup-restore.md",
+      "size": 4494,
+      "sha256": "dfd51d1cc4a158286ed8b18cf329d7313c0886e147caa797d5cb806166d9259d"
+    },
+    {
+      "path": "env/clickhouse.env.example",
+      "size": 200,
+      "sha256": "7975c3c4654068fe41867424af62ba3853a748bd20a4d474bfe027dde39e00ae"
+    },
+    {
+      "path": "env/compose.env.example",
+      "size": 973,
+      "sha256": "06967fa8786cc460966b0e2d705f4ec89dd39ee788933e8af20539c8e9ffae05"
+    },
+    {
+      "path": "env/edge.env.example",
+      "size": 1165,
+      "sha256": "539352bcee7e54c17a97a8e6ff29c3eb1f0dfafed0635eb2247e85f4893b3524"
+    },
+    {
+      "path": "env/gateway-postgres.env.example",
+      "size": 165,
+      "sha256": "6a2fa0779f5eb4e169e9bfa6739fcbba3dcb4ab6f646c18f965cad49ee86ac5a"
+    },
+    {
+      "path": "env/gateway.env.example",
+      "size": 12838,
+      "sha256": "56ee92d41832a20d80bcb530bc92d2db83d1ea4f8a3b4cbda8621da1d08af718"
+    },
+    {
+      "path": "env/kafka.env.example",
+      "size": 697,
+      "sha256": "8a3673d7ce4fd7ad28ee042a663ad1a792a7c2ca1995f1cbf0ca7b612b555073"
+    },
+    {
+      "path": "env/portal-postgres.env.example",
+      "size": 152,
+      "sha256": "e11b06abce5e3bd453f204c3e43cb9161778a1b0d2043d71c2fcc1c91b3595cb"
+    },
+    {
+      "path": "env/portal.env.example",
+      "size": 12982,
+      "sha256": "3edf7a14e96a6acca5ddc8fc8ed73ee783915105da71427127ff79413736323c"
+    },
+    {
+      "path": "images/frontend/Dockerfile",
+      "size": 954,
+      "sha256": "ff4dfe255af1461a81710109a78fbb71759e11547b29afd4b3b422a2f87694ca"
+    },
+    {
+      "path": "images/gateway/Dockerfile",
+      "size": 836,
+      "sha256": "fb173cee09d2d204487f47d64f8588c2550d45af76add8bc8ba2082ae555e6af"
+    },
+    {
+      "path": "images/portal/Dockerfile",
+      "size": 2252,
+      "sha256": "1ecac94c07c8bbc88eb6e4f408c83931faf06a1abaaf43a4489b6fe24eddafdc"
+    },
+    {
+      "path": "k8s/00-namespace.yaml",
+      "size": 249,
+      "sha256": "cef236b388db468044372185f933c85bbc0e61c17870cc8d1cdfd5e81b7fbd57"
+    },
+    {
+      "path": "k8s/01-config.yaml",
+      "size": 7633,
+      "sha256": "f3599ca7945027091782201563f22cce36df1db462be6cdbb764a3763b45d279"
+    },
+    {
+      "path": "k8s/02-secrets.example.yaml",
+      "size": 1726,
+      "sha256": "b7bd8221d7dc641573165c7b16efa0512056428b8324d17579fc79b703f502d4"
+    },
+    {
+      "path": "k8s/03-data.yaml",
+      "size": 8695,
+      "sha256": "1c1332fcd847f2a9e5c2477cdd92ecfcd9d85eb3cc49e5190923f3f6d47394d6"
+    },
+    {
+      "path": "k8s/04-jobs.yaml",
+      "size": 1316,
+      "sha256": "26b67c6c4d2cd42524cc5abfcc90bfc3e1d46ab63bde3dd6e277e128c3602cc8"
+    },
+    {
+      "path": "k8s/05-apps.yaml",
+      "size": 6563,
+      "sha256": "94af6d106516782166386b0a93d84ecccbe55e39f44ba52f4f56275d595b458a"
+    },
+    {
+      "path": "k8s/06-ingress.yaml",
+      "size": 720,
+      "sha256": "b554efae0fc358645211d84000b5a81aa0756c09c949be70bdf6e0925b29c444"
+    },
+    {
+      "path": "k8s/README.md",
+      "size": 7028,
+      "sha256": "322e5119b4996410a10cc79ddc561d0fbad512b61bba89645af1e76e77f0b731"
+    },
+    {
+      "path": "k8s/kustomization.yaml",
+      "size": 549,
+      "sha256": "677d99e17984de158742e694e1813135af8a155bb3a081872dff982a2022aedc"
+    },
+    {
+      "path": "release.json",
+      "size": 1208,
+      "sha256": "d8056e0421fce65aa1baede119e48eb597d2e6e936bda62e9b4ad587467c4a36"
+    },
+    {
+      "path": "scripts/check-config.sh",
+      "size": 5518,
+      "sha256": "dca409a44e531b10ed42e075148ae46adc52bdcc07efaa96d8a84e8414cc12d0"
+    },
+    {
+      "path": "scripts/install.sh",
+      "size": 24896,
+      "sha256": "52f494276026f1e569ed69d4f23b24789fca17994aa31e873039d38a424e7e41"
+    },
+    {
+      "path": "scripts/prepare-env.sh",
+      "size": 454,
+      "sha256": "a1774bd1c4b36ab651be8bfa3abb4abc1fbc3280f36554648d0bc470ae748e52"
+    },
+    {
+      "path": "scripts/test-edge.sh",
+      "size": 16165,
+      "sha256": "10ea140046d2dee2d296159aa227aac2a9245b85024bea8af3ab39ddd7190f01"
+    },
+    {
+      "path": "scripts/verify.sh",
+      "size": 2648,
+      "sha256": "a3a6c8bb1847e45365c6eedd10f6115d765e353200002a4a4be7b0b704d21a93"
     }
   ]
 }

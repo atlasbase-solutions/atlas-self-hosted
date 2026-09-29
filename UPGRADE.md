@@ -6,6 +6,16 @@ A new installation needs none of this: follow "One-line installation" or "Quick 
 
 Since 1.0.0 every database schema change arrives as a new numbered migration, and each migration runner records the checksum of every file it applied. An installation of 1.0.0 or later is therefore upgraded in place, without recreating its databases. If the installed version is older than the oldest supported source version of the release you are installing, stop and contact Atlas support before changing binaries or images.
 
+## Upgrading to 1.0.10
+
+Supported source versions: 1.0.0 and later.
+
+Release-specific steps, in order:
+
+1. **manual** (1.0.10): 1. Verify a freshly unpacked copy of the new distribution with its own tool: `./artifacts/linux-amd64/atlas-update-check -verify .`, and compare the printed key fingerprint with the one published by Atlas.
+   2. If you keep your own files inside the distribution directory — for example a `docker-compose.override.yml` — the check lists them as not in the signed index. Move them out of the distribution directory, or verify the new distribution before copying them in.
+   3. The new tool refuses distributions 1.0.9 and older: they were signed before this change, and only their binaries can be verified.
+
 ## Upgrading to 1.0.9
 
 Supported source versions: 1.0.0 and later.
