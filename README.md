@@ -598,10 +598,10 @@ The `config-quarantine` Kafka topic keeps configuration events the Gateway could
 
 ```sh
 docker compose --env-file env/compose.env run --rm \
-  --entrypoint atlas-update-check portal -installed 1.0.10
+  --entrypoint atlas-update-check portal -installed 1.0.11
 ```
 
-The tool presents the installation's license to Atlas, verifies the signed answer and reports the available release. To download it, mount an operator-owned writable directory and add `-download /downloads`. It installs and restarts nothing; read `UPGRADE.md` before replacing a running installation. The update channel serves releases only against a valid license, and an isolated installation cannot use it.
+The tool presents the installation's license to Atlas, verifies the signed answer and reports the current release. Atlas answers only a valid license; otherwise the tool shows the license status. To download the release, mount an operator-owned writable directory and add `-download /downloads/<version>` (a new or empty directory): the tool fetches the `vX.Y.Z` archive of this repository from GitHub, unpacks it and keeps it only if every file matches the Atlas release signature. It installs and restarts nothing; read `UPGRADE.md` before replacing a running installation. An isolated installation can download the release on another machine and check the copied directory with `atlas-update-check -verify`.
 
 ## Running the Portal in a customer network
 
@@ -641,7 +641,7 @@ TLS load balancer / reverse proxy
 - Inbound: TCP 80 and 443 to the Atlas host in `direct` mode; in `proxy` mode, TCP 443 to your TLS endpoint and `ATLAS_HTTP_PORT` from that endpoint only.
 - Never expose PostgreSQL 5432, ClickHouse 8123/9000, Redis 6379, Kafka 19092 or the Gateway metrics port 9108 publicly. The Compose stack publishes none of them.
 - Restrict SSH and Docker access to your operations network.
-- Outbound from Portal and Gateway: HTTPS (TCP 443) to Atlas for the license check and the update channel, unless the installation runs in isolated mode with an offline license file. If your firewall allows only named hosts, ask your Atlas contact for the list.
+- Outbound from Portal and Gateway: HTTPS (TCP 443) to Atlas for the license check and the update check, unless the installation runs in isolated mode with an offline license file. If your firewall allows only named hosts, ask your Atlas contact for the list.
 - Outbound from the Portal: HTTPS to `antifraud.getatlasbase.com` when you have the reputation-data subscription; your SMTP relay when email is configured.
 - Outbound from the Gateway: the receivers of your outbound postbacks.
 - Outbound from the edge in `direct` mode: the ACME certificate authorities (Let's Encrypt, with ZeroSSL as Caddy's fallback).
@@ -756,7 +756,7 @@ The portal and gateway images carry the command-line tools that the procedures i
 | `atlas-payouts-quarantine` | portal | Inspect and replay a quarantined payout-ledger message; the ledger stops closing periods rather than close an incomplete one |
 | `atlas-rotate-secrets` | portal | Re-encrypt the secrets stored at rest after an encryption key is replaced |
 | `atlas-reset-owner-password` | portal | Set a new password for the Network Owner and revoke every session of that owner |
-| `atlas-update-check` | portal | Check for a new release against this installation's license and optionally download it; `-verify <dir>` checks the signature of an unpacked distribution without a license or network access |
+| `atlas-update-check` | portal | Check for a new release against this installation's license and optionally download it from GitHub with signature verification; `-verify <dir>` checks the signature of an unpacked distribution without a license or network access |
 | `atlas-outbound-deliveries` | gateway | Inspect and replay the outbound postback dead-letter queue |
 
 ```bash

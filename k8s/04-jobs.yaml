@@ -36,7 +36,7 @@ spec:
       restartPolicy: OnFailure
       containers:
         - name: gateway-migrate
-          image: registry.example.com/atlas/gateway:1.0.10
+          image: registry.example.com/atlas/gateway:1.0.11
           imagePullPolicy: IfNotPresent
           command: ["/usr/local/bin/atlas-migrate"]
           args: ["-target=all", "-seed=false", "-timeout=2m"]

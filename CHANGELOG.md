@@ -4,6 +4,14 @@ All notable changes to the Atlas Self-Hosted distribution are documented here, n
 
 Version 1.0.9 is the first public release of this repository. Its section lists every customer-facing change made since the 1.0.0 baseline, so that an installation made from an earlier private build can see everything it is about to receive.
 
+## 1.0.11 — 2026-10-05
+
+Changes since 1.0.10.
+
+### Features
+
+- `atlas-update-check` now gets only the current version number from Atlas and downloads the whole release from this GitHub repository (the `vX.Y.Z` tag archive) with `-download <new or empty directory>`, keeping it only if every file matches the Atlas release signature. Downloading needs outbound HTTPS to `github.com` and `codeload.github.com`.
+
 ## 1.0.10 — 2026-09-29
 
 Changes since 1.0.9.

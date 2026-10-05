@@ -6,6 +6,15 @@ A new installation needs none of this: follow "One-line installation" or "Quick 
 
 Since 1.0.0 every database schema change arrives as a new numbered migration, and each migration runner records the checksum of every file it applied. An installation of 1.0.0 or later is therefore upgraded in place, without recreating its databases. If the installed version is older than the oldest supported source version of the release you are installing, stop and contact Atlas support before changing binaries or images.
 
+## Upgrading to 1.0.11
+
+Supported source versions: 1.0.0 and later.
+
+Release-specific steps, in order:
+
+1. **manual** (1.0.11): 1. `atlas-update-check` from 1.0.10 and earlier cannot read the new answer from Atlas and reports that a signature does not verify. Download this release by hand instead: fetch `https://github.com/atlasbase-solutions/atlas-self-hosted/archive/refs/tags/v<version>.tar.gz`, unpack it into a new directory and run `./artifacts/linux-amd64/atlas-update-check -verify .` there before following the rest of this file.
+   2. From this release on, `atlas-update-check -download <new directory>` does that for you.
+
 ## Upgrading to 1.0.10
 
 Supported source versions: 1.0.0 and later.
