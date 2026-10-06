@@ -4,6 +4,18 @@ All notable changes to the Atlas Self-Hosted distribution are documented here, n
 
 Version 1.0.9 is the first public release of this repository. Its section lists every customer-facing change made since the 1.0.0 baseline, so that an installation made from an earlier private build can see everything it is about to receive.
 
+## 1.0.12 — 2026-10-06
+
+Changes since 1.0.11.
+
+### Features
+
+- Analytics has a new Forecast tab for the network owner and managers: how the current month will end for network revenue, partner payouts and margin, shown as a range at the pace of the last two weeks, with a breakdown by advertiser, offer or partner and a note on money still on hold. The dashboard gets a matching "Month forecast" widget.
+
+### Fixes
+
+- The "⋯" row actions menu on the Flows, Campaigns and Traffic sources lists opened as a thin clipped strip when the table had only a few rows; it now opens in full above the table and flips upwards near the bottom of the window.
+
 ## 1.0.11 — 2026-10-05
 
 Changes since 1.0.10.

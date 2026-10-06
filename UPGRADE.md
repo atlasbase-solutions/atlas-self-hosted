@@ -6,6 +6,12 @@ A new installation needs none of this: follow "One-line installation" or "Quick 
 
 Since 1.0.0 every database schema change arrives as a new numbered migration, and each migration runner records the checksum of every file it applied. An installation of 1.0.0 or later is therefore upgraded in place, without recreating its databases. If the installed version is older than the oldest supported source version of the release you are installing, stop and contact Atlas support before changing binaries or images.
 
+## Upgrading to 1.0.12
+
+Supported source versions: 1.0.0 and later.
+
+No release-specific steps: follow the standard upgrade procedure.
+
 ## Upgrading to 1.0.11
 
 Supported source versions: 1.0.0 and later.

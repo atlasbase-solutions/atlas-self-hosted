@@ -17,13 +17,13 @@ The Kubernetes manifests differ from the Docker Compose stack in two ways. The e
 Run from the repository root:
 
 ```bash
-docker build -f images/portal/Dockerfile -t registry.example.com/atlas/portal:1.0.11 .
-docker build -f images/gateway/Dockerfile -t registry.example.com/atlas/gateway:1.0.11 .
-docker build -f images/frontend/Dockerfile -t registry.example.com/atlas/frontend:1.0.11 .
+docker build -f images/portal/Dockerfile -t registry.example.com/atlas/portal:1.0.12 .
+docker build -f images/gateway/Dockerfile -t registry.example.com/atlas/gateway:1.0.12 .
+docker build -f images/frontend/Dockerfile -t registry.example.com/atlas/frontend:1.0.12 .
 
-docker push registry.example.com/atlas/portal:1.0.11
-docker push registry.example.com/atlas/gateway:1.0.11
-docker push registry.example.com/atlas/frontend:1.0.11
+docker push registry.example.com/atlas/portal:1.0.12
+docker push registry.example.com/atlas/gateway:1.0.12
+docker push registry.example.com/atlas/frontend:1.0.12
 ```
 
 Replace `registry.example.com` with your registry in the three `newName` values of `kustomization.yaml` (and in `05-apps.yaml`/`04-jobs.yaml` if you apply them without Kustomize). If the registry is private, add an `imagePullSecret` to the three application Deployments.
