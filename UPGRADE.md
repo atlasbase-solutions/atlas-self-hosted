@@ -6,6 +6,34 @@ A new installation needs none of this: follow "One-line installation" or "Quick 
 
 Since 1.0.0 every database schema change arrives as a new numbered migration, and each migration runner records the checksum of every file it applied. An installation of 1.0.0 or later is therefore upgraded in place, without recreating its databases. If the installed version is older than the oldest supported source version of the release you are installing, stop and contact Atlas support before changing binaries or images.
 
+## Upgrading to 1.1.0
+
+Supported source versions: 1.0.0 and later.
+
+Release-specific steps, in order:
+
+1. **migration** (1.1.0): 1. Apply the tracking database migrations before starting the new version: they add the table the tracking service reads profiles from.
+   2. The portal applies its migrations at startup and moves every custom click ID parameter name into a profile assigned to its offers.
+   3. Profiles reach the tracking service through the configuration topic. Activity rows go from the portal to the tracking service's internal listener (`PORTAL_GATEWAY_INTERNAL_URL`, by default `http://gateway:9108`) and are signed with `ATLAS_CONFIG_SECRET_KEY`, which must be set and equal on both services for the import to work.
+2. **migration** (1.1.0): 1. The portal applies one new migration at startup: statement, statement line and payment tables, a statement reference on listing fee charges and the new payout setting. Existing data is not changed, and the new setting is off.
+3. **migration** (1.1.0): The portal applies its new migrations at startup; nothing else is required.
+4. **migration** (1.1.0): 1. The portal applies the new migration at startup: it adds the reason code for accruals waiting for an exchange rate.
+   2. Networks without a network currency see no change.
+5. **migration** (1.1.0): 1. The portal applies the new migration at startup: it adds the conversion functions and the waiting reason for period slices.
+   2. Networks without a network currency see no change.
+6. **migration** (1.1.0): 1. The portal applies two new migrations at startup: per-currency shelf life, the source of each rate and the automatic-rates switch. Existing rates are marked as entered by hand.
+   2. Automatic ECB rates are off by default. Turning them on makes the portal connect to `https://www.ecb.europa.eu` at most once an hour; allow this outbound address if your firewall restricts traffic.
+7. **migration** (1.1.0): 1. The portal applies the new migration at startup: it lifts the database rule that forced one currency per rate row; the portal itself still requires one currency while the network has no network currency.
+   2. Networks without a network currency see no change.
+8. **migration** (1.1.0): 1. Apply the tracking database migrations before starting the new version: the ClickHouse step changes the type of the click cost and conversion amount columns and rewrites those tables, so on a large installation it takes time proportional to their size.
+   2. The portal widens every money column of each network at startup. This rewrites the conversion and accrual tables under a lock: plan a maintenance window on installations with millions of conversions.
+   3. No configuration changes are needed.
+9. **migration** (1.1.0): 1. The portal applies the new migration at startup: it adds the network currency and freshness settings to the payout settings and creates the exchange-rate table. Existing networks keep conversion switched off.
+   2. No configuration change is required.
+10. **migration** (1.1.0): 1. The portal applies the new migration at startup: it adds the baseline fields to goals and rate matrix rows, the player state table and three new reason codes.
+   2. Offers without a baseline behave exactly as before.
+   3. The accumulating mode needs the advertiser to send every deposit to the offer, not only the first one.
+
 ## Upgrading to 1.0.12
 
 Supported source versions: 1.0.0 and later.

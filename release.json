@@ -1,23 +1,23 @@
 {
   "product": "Atlas Self-Hosted",
-  "version": "1.0.12",
+  "version": "1.1.0",
   "edition": "self-hosted",
   "architecture": "linux/amd64",
-  "source_commit": "469dbac3c853",
-  "built_at": "2026-10-06T08:34:58Z",
+  "source_commit": "d0ddcb7b4a53",
+  "built_at": "2026-10-09T03:26:16Z",
   "license_signing_key_ids": [
     "k1"
   ],
   "artifacts": {
-    "atlas-config-backfill": "0bcc30879224ba5f36ecaf954fa83528ae309beaba893a6954e6cc6cd734d2fa",
-    "atlas-gateway": "654bd7322de2d7c4991f009b78007a08e78cd369aa5997790b7881b50034d49b",
-    "atlas-migrate": "d400be202a700bf00fa2c19bce52a26377bf900a359feb7abf476d77fb481e20",
-    "atlas-outbound-deliveries": "a8ae7cffc43ebb23d971abf83d49d3d7bda70f0b76c3cc2378bebbbb10c1d259",
-    "atlas-payouts-quarantine": "bf748aab44720581b0193d385e1a88d56b9196bdfee8ec55f42b3ddef343a7e2",
-    "atlas-portal": "ecdac2af4638ad90c451ab7f52b0af865a0f408b1a504a51aa51fa4fb746c9ad",
-    "atlas-reset-owner-password": "4632ef5c2507bb43a122adbf465c92b1972b5bdfd4d1290764c4ea9fc3856ec8",
-    "atlas-rotate-secrets": "e6a166ccf7d8e2b646e89d2a3247b684c290e5ebac94b28c6937010f3b0a46e2",
-    "atlas-setup-code": "a953827592c8533146d73a3f2f6cfce2ebffcd06eb8b255dc786627a8a9596f8",
+    "atlas-config-backfill": "19646634abf8ca4f05764249fc7781ed165d35d8e56f82826e24fa87bfa32135",
+    "atlas-gateway": "52e182435855bc07c65f5c634047401963cb539a0fbd75d7bf6a9a43df984697",
+    "atlas-migrate": "8e23b8d5d9478074bead2ba195246beedeeadd7a4b4edc02c88eac55f2b08c62",
+    "atlas-outbound-deliveries": "640a5a845d5db972edec84e88540beba125c6489da791391bfed41c27295d693",
+    "atlas-payouts-quarantine": "42e6b198d0db4c8c2e97498b96c78f3c3a84adc78e1a4edeb20913a23ceb2c03",
+    "atlas-portal": "898900a3a862f3130da5d93dafb8e93d9444cc02ea58a0bbbabbadd7da2f6b37",
+    "atlas-reset-owner-password": "72fc64f76223f7f79c5c54452859bcd8e7cfc15f9dba0143f7dd987ff3c20d73",
+    "atlas-rotate-secrets": "ab5d0f5216d530931ed67ce47e80920e31ad1165a2978717e77671bc871e17cf",
+    "atlas-setup-code": "3967ce16ad3d1293b4b8f8f0f2016f283356a9c0cd854e53a1b26c89157c0966",
     "atlas-update-check": "a6a0d1e4023fc9eaaa388975cca8b9342223800217eee9a7360c8d1dd87b4f33"
   }
 }

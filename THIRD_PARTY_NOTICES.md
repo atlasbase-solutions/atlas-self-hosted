@@ -1,6 +1,6 @@
 # Third-party notices
 
-Atlas Self-Hosted includes third-party software and data. This file lists them with their licenses, as those licenses require for distribution in binary form. It covers Atlas release 1.0.11 and is generated from the shipped binaries and the Portal web application's dependencies.
+Atlas Self-Hosted includes third-party software and data. This file lists them with their licenses, as those licenses require for distribution in binary form. It covers Atlas release 1.0.12 and is generated from the shipped binaries and the Portal web application's dependencies.
 
 Atlas itself is proprietary software; see `LICENSE.md`. Nothing in this file grants rights to Atlas.
 
