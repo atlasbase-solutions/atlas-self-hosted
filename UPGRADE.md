@@ -6,6 +6,18 @@ A new installation needs none of this: follow "One-line installation" or "Quick 
 
 Since 1.0.0 every database schema change arrives as a new numbered migration, and each migration runner records the checksum of every file it applied. An installation of 1.0.0 or later is therefore upgraded in place, without recreating its databases. If the installed version is older than the oldest supported source version of the release you are installing, stop and contact Atlas support before changing binaries or images.
 
+## Upgrading to 1.1.1
+
+Supported source versions: 1.0.0 and later.
+
+Release-specific steps, in order:
+
+1. **manual** (1.1.1): Nothing to do, unless an upgrade to 1.1.0 already stopped with `context deadline exceeded` on `0003_money_scale_8.sql`. In that case, before starting this version:
+
+   1. In `clickhouse-client`, wait until `SELECT count() FROM system.mutations WHERE database = 'atlas_gateway' AND NOT is_done` returns `0`, and until `system.processes` shows no `ALTER TABLE` query.
+   2. Drop the lock the interrupted run left behind: `DROP TABLE atlas_gateway.schema_migration_lock`.
+   3. Start the new version as usual. The migrator applies `0003_money_scale_8.sql` again; the tables already converted are not rewritten a second time.
+
 ## Upgrading to 1.1.0
 
 Supported source versions: 1.0.0 and later.

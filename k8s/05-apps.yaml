@@ -53,7 +53,7 @@ spec:
         seccompProfile: {type: RuntimeDefault}
       containers:
         - name: portal
-          image: registry.example.com/atlas/portal:1.1.0
+          image: registry.example.com/atlas/portal:1.1.1
           imagePullPolicy: IfNotPresent
           envFrom:
             - configMapRef: {name: atlas-runtime}
@@ -127,7 +127,7 @@ spec:
         seccompProfile: {type: RuntimeDefault}
       containers:
         - name: gateway
-          image: registry.example.com/atlas/gateway:1.1.0
+          image: registry.example.com/atlas/gateway:1.1.1
           imagePullPolicy: IfNotPresent
           envFrom:
             - configMapRef: {name: atlas-runtime}
@@ -190,7 +190,7 @@ spec:
     spec:
       containers:
         - name: frontend
-          image: registry.example.com/atlas/frontend:1.1.0
+          image: registry.example.com/atlas/frontend:1.1.1
           imagePullPolicy: IfNotPresent
           envFrom:
             - configMapRef: {name: atlas-runtime}

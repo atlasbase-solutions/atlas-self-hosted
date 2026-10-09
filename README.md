@@ -598,7 +598,7 @@ The `config-quarantine` Kafka topic keeps configuration events the Gateway could
 
 ```sh
 docker compose --env-file env/compose.env run --rm \
-  --entrypoint atlas-update-check portal -installed 1.1.0
+  --entrypoint atlas-update-check portal -installed 1.1.1
 ```
 
 The tool presents the installation's license to Atlas, verifies the signed answer and reports the current release. Atlas answers only a valid license; otherwise the tool shows the license status. To download the release, mount an operator-owned writable directory and add `-download /downloads/<version>` (a new or empty directory): the tool fetches the `vX.Y.Z` archive of this repository from GitHub, unpacks it and keeps it only if every file matches the Atlas release signature. It installs and restarts nothing; read `UPGRADE.md` before replacing a running installation. An isolated installation can download the release on another machine and check the copied directory with `atlas-update-check -verify`.

@@ -4,6 +4,14 @@ All notable changes to the Atlas Self-Hosted distribution are documented here, n
 
 Version 1.0.9 is the first public release of this repository. Its section lists every customer-facing change made since the 1.0.0 baseline, so that an installation made from an earlier private build can see everything it is about to receive.
 
+## 1.1.1 — 2026-10-09
+
+Changes since 1.1.0.
+
+### Fixes
+
+- The tracking database migrator no longer stops after 30 seconds. A ClickHouse migration that changes a column type waits until the table has been rewritten, which takes minutes or hours on a large installation; the migrator used to give up midway, leave its migration lock behind and keep the new version from starting. It now runs until the migration finishes; `-timeout` still sets a limit when given explicitly.
+
 ## 1.1.0 — 2026-10-09
 
 Changes since 1.0.12.
