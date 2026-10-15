@@ -598,7 +598,7 @@ The `config-quarantine` Kafka topic keeps configuration events the Gateway could
 
 ```sh
 docker compose --env-file env/compose.env run --rm \
-  --entrypoint atlas-update-check portal -installed 1.1.1
+  --entrypoint atlas-update-check portal -installed 1.1.4
 ```
 
 The tool presents the installation's license to Atlas, verifies the signed answer and reports the current release. Atlas answers only a valid license; otherwise the tool shows the license status. To download the release, mount an operator-owned writable directory and add `-download /downloads/<version>` (a new or empty directory): the tool fetches the `vX.Y.Z` archive of this repository from GitHub, unpacks it and keeps it only if every file matches the Atlas release signature. It installs and restarts nothing; read `UPGRADE.md` before replacing a running installation. An isolated installation can download the release on another machine and check the copied directory with `atlas-update-check -verify`.
@@ -642,7 +642,7 @@ TLS load balancer / reverse proxy
 - Never expose PostgreSQL 5432, ClickHouse 8123/9000, Redis 6379, Kafka 19092 or the Gateway metrics port 9108 publicly. The Compose stack publishes none of them.
 - Restrict SSH and Docker access to your operations network.
 - Outbound from Portal and Gateway: HTTPS (TCP 443) to Atlas for the license check and the update check, unless the installation runs in isolated mode with an offline license file. If your firewall allows only named hosts, ask your Atlas contact for the list.
-- Outbound from the Portal: HTTPS to `antifraud.getatlasbase.com` when you have the reputation-data subscription; your SMTP relay when email is configured.
+- Outbound from the Portal: HTTPS to `antifraud.getatlasbase.com` when you have the reputation-data subscription; your SMTP relay when email is configured; `webrisk.googleapis.com:443` when the domain reputation check is turned on in Settings (off by default).
 - Outbound from the Gateway: the receivers of your outbound postbacks.
 - Outbound from the edge in `direct` mode: the ACME certificate authorities (Let's Encrypt, with ZeroSSL as Caddy's fallback).
 

@@ -6,6 +6,18 @@ A new installation needs none of this: follow "One-line installation" or "Quick 
 
 Since 1.0.0 every database schema change arrives as a new numbered migration, and each migration runner records the checksum of every file it applied. An installation of 1.0.0 or later is therefore upgraded in place, without recreating its databases. If the installed version is older than the oldest supported source version of the release you are installing, stop and contact Atlas support before changing binaries or images.
 
+## Upgrading to 1.1.4
+
+Supported source versions: 1.0.0 and later.
+
+Release-specific steps, in order:
+
+1. **migration** (1.1.3): 1. The portal applies tenant migration `0023` on startup. It adds a settings table with the check turned off and an empty verdict table. Existing data is not touched.
+   2. Optional, self-hosted: before turning the check on, allow outbound HTTPS from the portal to `webrisk.googleapis.com:443`.
+   3. The Web Risk key is encrypted with `PORTAL_SECRET_KEY` and re-encrypted by `rotate-secrets` together with the SMTP password.
+2. **migration** (1.1.3): 1. The portal applies tenant migration `0024` on startup. It adds the alert settings with every channel off, empty recipient, subscription, state and history tables, and the delivery queue. Existing data is not touched.
+3. **migration** (1.1.3): 1. The portal applies tenant migration `0022` on startup. It adds nullable criterion columns to offer goals and to rate matrix rows, a column for the qualification result on conversions, and relaxes the goal constraint so the deposit sum is optional when another criterion is set. Existing rows are not rewritten.
+
 ## Upgrading to 1.1.1
 
 Supported source versions: 1.0.0 and later.

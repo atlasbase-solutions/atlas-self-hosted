@@ -4,6 +4,24 @@ All notable changes to the Atlas Self-Hosted distribution are documented here, n
 
 Version 1.0.9 is the first public release of this repository. Its section lists every customer-facing change made since the 1.0.0 baseline, so that an installation made from an earlier private build can see everything it is about to receive.
 
+## 1.1.4 — 2026-10-15
+
+Changes since 1.1.1.
+
+### Features
+
+- Dashboard charts were redesigned: the activity chart shows period totals with the change against the previous period, a dashed previous-period line, columns for the second metric and shaded weekends; KPI tiles get a trend line; gauges mark where progress should be now and state the status in words; breakdowns, the funnel, share rings and the hour-by-weekday map are easier to read.
+- The portal can now check every live network domain against Google Web Risk, the lists browsers use to show a dangerous-site warning. The network owner enters their own Web Risk API key in Settings → Domain reputation and turns the check on. Domains are checked hourly, a flagged one every 15 minutes. A flagged domain shows its threat type in the Domains block, raises a critical item in «Needs attention» and is recorded in the activity log. Atlas never disables a domain on its own. The check is off by default; when enabled, the portal connects to `webrisk.googleapis.com:443`.
+- The network owner can now receive «Needs attention» signals by email instead of only seeing them on the dashboard. In Settings → Alerts, choose staff recipients and the message language, then pick which signals to send. The signals are a flagged domain, conversions not reaching the ad account, campaigns without conversions, offers at their cap, a traffic or conversion-rate drop, undelivered postbacks, a missing exchange rate and the licence. Atlas sends an alert when a signal starts, a reminder once a day while it lasts, and a message when it clears. The history of sent alerts is shown in the block and in a dashboard widget. Alerts go through the network's own SMTP and are off by default.
+- Analytics → Cohorts has a new Players mode: players are grouped by the calendar month of their first deposit or registration, with deposits, withdrawals, net deposits, bets, wins, bonuses, depositing players and the partner payout shown for each month from M0 to M12. Values can be cumulative and per player (lifetime value), split by up to two dimensions, and converted into the network currency. The data comes from the accrual ledger, so the mode works without event analytics. NGR and revenue-share commission are not shown per player: they exist only per period, offer and partner. The same matrix is available in the public API at `/api/v1/stats/player-cohort` and `/api/v1/me/stats/player-cohort`.
+- Player qualification on a CPA goal can now combine several criteria, all of which must be met within the same window: the deposit sum, the wager sum, the wager as a multiple of the window's deposits, and the number of deposits. Bets arrive through the existing bet goal by postback or activity import. Accruals show progress on each criterion, and a rejection names the criteria that were not met. Existing offers keep working unchanged: their condition is the deposit sum alone.
+- The System settings navigation is easier to scan: blocks are arranged in six groups, the column scrolls on its own so the last blocks are reachable on a laptop screen, and the open block is always scrolled into view, including the narrow-screen strip. Every block now shows its state the same way — a coloured dot and a lowercase label, with orange reserved for what needs your action — the Domains block gained a state, a missing licence is no longer labelled "revoked", and a cloud network sees its plan name instead of "not applicable".
+- The System settings navigation is now compact: each block takes one line, its state is a dot next to the name with the wording in a tooltip, and only states that need your action are written out under the name. The whole list fits on a 1080-pixel screen without scrolling.
+
+### Fixes
+
+- Cloning an offer now copies each goal whole: the advertiser rate, the event qualification threshold and the player qualification condition with all its criteria. Previously only the model, payout, currency and hold period were copied, so a clone silently lost the network's revenue and the qualification its first deposits were paid on.
+
 ## 1.1.1 — 2026-10-09
 
 Changes since 1.1.0.
