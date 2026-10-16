@@ -6,6 +6,14 @@ A new installation needs none of this: follow "One-line installation" or "Quick 
 
 Since 1.0.0 every database schema change arrives as a new numbered migration, and each migration runner records the checksum of every file it applied. An installation of 1.0.0 or later is therefore upgraded in place, without recreating its databases. If the installed version is older than the oldest supported source version of the release you are installing, stop and contact Atlas support before changing binaries or images.
 
+## Upgrading to 1.1.5
+
+Supported source versions: 1.0.0 and later.
+
+Release-specific steps, in order:
+
+1. **migration** (1.1.5): The portal applies its new tenant migration on start; no manual steps. Webhook signing secrets are sealed with `PORTAL_SECRET_KEY`, so set it before adding an endpoint, and include them in `rotate-secrets` runs as usual. Outgoing webhook requests go only to public addresses over HTTPS; an internal receiver over plain HTTP needs its subnet listed in `OUTBOUND_ALLOWED_TARGET_CIDRS`.
+
 ## Upgrading to 1.1.4
 
 Supported source versions: 1.0.0 and later.

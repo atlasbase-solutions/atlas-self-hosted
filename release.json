@@ -1,23 +1,23 @@
 {
   "product": "Atlas Self-Hosted",
-  "version": "1.1.4",
+  "version": "1.1.5",
   "edition": "self-hosted",
   "architecture": "linux/amd64",
-  "source_commit": "dbcf22e2968d",
-  "built_at": "2026-10-14T17:20:39Z",
+  "source_commit": "7fe4c52ac6ca",
+  "built_at": "2026-10-16T10:45:35Z",
   "license_signing_key_ids": [
     "k1"
   ],
   "artifacts": {
-    "atlas-config-backfill": "eaac53f69b0a042216edab8c8b375f5c4bf5225dc042a42014a9a7efd0f18e50",
-    "atlas-gateway": "8e5b0029207fb0cfa1a3b0de718449ae1fae86a4e0472e69f2e11aeb8e5b8f9c",
+    "atlas-config-backfill": "c074d4ce7a5ac821b8d414b1c34a3428244cbf27dbc4e9ab64ad9ae609911e0d",
+    "atlas-gateway": "ed938c8da2d64938d4d1bc16e1fc63f59b9fadf3167fa45080ab571c64ac8647",
     "atlas-migrate": "bccf2d461ecee292266be6436a06f388f6620dbe8a53482f679149883b9a6b2b",
-    "atlas-outbound-deliveries": "640a5a845d5db972edec84e88540beba125c6489da791391bfed41c27295d693",
-    "atlas-payouts-quarantine": "a73f8c38a13ef5d37dd235278f60fda1982ab731a634a7b24d903562b9d74ce3",
-    "atlas-portal": "fba71a29767fdefd74c1df5c2d51d89223c65fd62c216ec33e4cc433fd614cdb",
-    "atlas-reset-owner-password": "4bc77f711916df21e3af1620a97e403f5435e306cd12af4654c40d767181b5ff",
-    "atlas-rotate-secrets": "fa4fb7c26bb085025a559f07a431fd389a89ba273e82d763c78c08b74c92da21",
-    "atlas-setup-code": "79a6fdf2f2440af1413b1422e26dd324e0cee4b49abff159d4ee391ced32f5c4",
+    "atlas-outbound-deliveries": "d4d804c7596dcfc68ba5c9ef8b4089432fb27e84ebbeadb7593312822d999569",
+    "atlas-payouts-quarantine": "5ab9e15a0329a0d5e75c495d02f8ac0eeb91eafc05750cdaa7fe2c2c427d9826",
+    "atlas-portal": "4bc2deaa2bcb77a9868220ced641064fc033ce7cdb1969533841b07e2d8d141c",
+    "atlas-reset-owner-password": "fe74211e0a8025134824c2b5c05c3850167914e669e67c13daa6acac69465b9d",
+    "atlas-rotate-secrets": "8a62468c1dc2bdc3f8cd0913723915d77b00c73f2dbc8e0ceed1f4c5b4b684b3",
+    "atlas-setup-code": "9d1416f12683eb6fe58d27ab2f39bc6640506d7ce8095587221c30f362bc1b09",
     "atlas-update-check": "a6a0d1e4023fc9eaaa388975cca8b9342223800217eee9a7360c8d1dd87b4f33"
   }
 }

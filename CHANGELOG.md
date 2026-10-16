@@ -4,6 +4,14 @@ All notable changes to the Atlas Self-Hosted distribution are documented here, n
 
 Version 1.0.9 is the first public release of this repository. Its section lists every customer-facing change made since the 1.0.0 baseline, so that an installation made from an earlier private build can see everything it is about to receive.
 
+## 1.1.5 — 2026-10-16
+
+Changes since 1.1.4.
+
+### Features
+
+- Network owners can register outbound webhook endpoints and receive signed events about conversions (created, status changed, reversed), partners' offer access (requested, granted, rejected, revoked) and network alerts. Every event is queued in the same transaction as the change it describes and delivered as an HMAC-SHA256 signed POST with retries for about a day; an endpoint that accepts nothing for 72 hours is switched off and reported in "Needs attention".
+
 ## 1.1.4 — 2026-10-15
 
 Changes since 1.1.1.
