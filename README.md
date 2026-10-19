@@ -238,7 +238,7 @@ This section describes the business surface in detail so that an operator, a sec
 
 ### First-run wizard and license activation
 
-- A new installation opens a browser wizard protected by a one-time setup code: network name and time zone, the portal and tracking domains (with the DNS records to create and a live check of each), the Network Owner account created over HTTPS on your own domain, then license activation and email.
+- A new installation opens a browser wizard protected by a one-time setup code: network name and time zone, the portal and tracking domains (with the DNS records to create and a live check of each), the Network Owner account created over HTTPS on your own domain, then license activation and email. The domains can also wait: the wizard then creates the owner over HTTPS on the server's own address, and the Network Owner declares or changes the domains later in Settings → Domains.
 - The license is activated by pasting it into the portal; the Network Owner can later replace, restore or remove it in Settings → License.
 - Without a license the portal opens in a restricted mode: everyone can sign in and work with data and settings, a banner names the reason, and traffic intake and money actions wait for the license.
 
@@ -409,11 +409,11 @@ The installer asks no questions. It:
 3. downloads this distribution, verifies every binary against `SHA256SUMS` and every file of the distribution against the release index signed with the Atlas release key, and refuses to continue if the distribution is not signed by Atlas or any file is changed, missing or not listed in the index;
 4. creates `/opt/atlas`, generates independent random database and encryption secrets and writes the service env files (readable by root only);
 5. builds the images, starts the Compose stack and checks it from inside the server;
-6. registers a one-time **setup code** and saves the wizard link `http://<server IP>/setup#code=...` to `/root/atlas-setup.txt` (readable by root only). The link is also printed when you run the command in a terminal, and the login message reminds you about it until setup is complete.
+6. registers a one-time **setup code**, waits up to two minutes for an HTTPS certificate on the server's public address (Let's Encrypt issues one for the address itself) and saves the wizard link `https://<server IP>/setup#code=...` to `/root/atlas-setup.txt` (readable by root only). When the certificate is not issued in time — usually ports 80/443 closed at the provider, or no public address on the server — the link is `http://` and the wizard shows the reason. The link is also printed when you run the command in a terminal, and the login message reminds you about it until setup is complete.
 
 Transient failures — a package mirror, GitHub or an image registry dropping the connection, a fresh server still busy with its own package updates, a service slow on its first start — are waited for and retried. **Interrupted, or a step did not complete? Run the same command again.** It continues the installation in `/opt/atlas`: starts the stack, checks it and prints a fresh wizard link. It never downloads over, regenerates or deletes anything of an existing installation. When a service does not become healthy, the installer prints the state of every service and the recent log of each failing one.
 
-Open the link in a browser. The **first-run wizard** asks for the network name and time zone, the portal and tracking domains (it shows the DNS records to create and checks them), creates the Network Owner over HTTPS on your portal domain, and then offers license activation and email settings. Certificates are issued automatically once a domain points at the server. Nothing about your network is typed into the server.
+Open the link in a browser. The **first-run wizard** asks for the network name and time zone, the portal and tracking domains (it shows the DNS records to create and checks them), creates the Network Owner over HTTPS on your portal domain, and then offers license activation and email settings. Certificates are issued automatically once a domain points at the server. **No domain yet?** Choose "I'll set the domains later": the owner is created over HTTPS on the server's address, and the portal works there until you declare the domains in Settings → Domains. Tracking traffic needs a tracking domain and a license. Nothing about your network is typed into the server.
 
 Lost the link, or the code is locked after too many wrong attempts? Run `sudo atlas-setup-code` on the server: it issues a new code (the previous one stops working) and prints the new link.
 
@@ -603,7 +603,7 @@ The `config-quarantine` Kafka topic keeps configuration events the Gateway could
 
 ```sh
 docker compose --env-file env/compose.env run --rm \
-  --entrypoint atlas-update-check portal -installed 1.1.7
+  --entrypoint atlas-update-check portal -installed 1.1.8
 ```
 
 The tool presents the installation's license to Atlas, verifies the signed answer and reports the current release. Atlas answers only a valid license; otherwise the tool shows the license status. To download the release, mount an operator-owned writable directory and add `-download /downloads/<version>` (a new or empty directory): the tool fetches the `vX.Y.Z` archive of this repository from GitHub, unpacks it and keeps it only if every file matches the Atlas release signature. It installs and restarts nothing; read `UPGRADE.md` before replacing a running installation. An isolated installation can download the release on another machine and check the copied directory with `atlas-update-check -verify`.
@@ -622,10 +622,10 @@ Keeping click and postback hosts apart means a click domain that lands on an ad-
 
 `ATLAS_EDGE_MODE` in `env/compose.env` selects how the edge faces the internet; the same value reaches the portal.
 
-- **`direct`** (default) — a server of its own. The edge listens on `80` and `443`, obtains and renews certificates for the portal, tracking and postback names itself (ACME: HTTP-01 on port 80, TLS-ALPN on 443) and keeps them in the `edge-data` volume. Plain HTTP on a known name redirects to HTTPS, except certificate-authority checks; the portal name sends HSTS. After setup, an IP address or an unknown name gets `404`. There is no proxy in front, so the edge takes the client address from the connection and discards any `X-Forwarded-*` a client sends. Both ports must be reachable from the internet, and a CAA record, if you have one, must allow Let's Encrypt.
+- **`direct`** (default) — a server of its own. The edge listens on `80` and `443`, obtains and renews certificates for the portal, tracking and postback names itself (ACME: HTTP-01 on port 80, TLS-ALPN on 443) and keeps them in the `edge-data` volume. Plain HTTP on a known name redirects to HTTPS, except certificate-authority checks; the portal name sends HSTS. Until a portal domain is declared, the edge also serves the server's public addresses (`ATLAS_PUBLIC_IPS`) over HTTPS with a short-lived Let's Encrypt certificate for the address, falling back to a certificate of its own authority when the public one cannot be issued (the browser then warns); after setup without domains that address is the portal. Once the portal domain is declared, the address redirects to it, and an unknown name gets `404`. The outcome of the latest certificate attempt for every name goes to `acme.json` in the `edge-status` volume, which the portal reads (read-only) to show why a certificate is missing. There is no proxy in front, so the edge takes the client address from the connection and discards any `X-Forwarded-*` a client sends. Both ports must be reachable from the internet, and a CAA record, if you have one, must allow Let's Encrypt.
 - **`proxy`** — your TLS load balancer or reverse proxy terminates TLS and forwards plain HTTP to `ATLAS_HTTP_PORT`. Set `ATLAS_HTTP_PORT=8080` (or any free port), `ATLAS_HTTPS_BIND=127.0.0.1`, an empty `ATLAS_HTTPS_PORT`, and name the proxy network in `ATLAS_EDGE_TRUSTED_PROXY_CIDR` (see below).
 
-Host names come from the first-run wizard: the portal writes them to `installation.json` in the `atlas-installation` volume and the edge picks up a change within 5 seconds, without a restart. `ATLAS_PORTAL_HOST`, `ATLAS_TRACKING_HOST` and `ATLAS_POSTBACK_HOST` in `env/edge.env`, when set, win over the wizard. Until the portal and tracking names are known, the edge serves the setup wizard on plain HTTP for any name or IP. A new configuration that cannot be applied is logged and the previous one keeps serving; `docker compose --env-file env/compose.env exec edge atlas-edge-render` prints the configuration the edge would use now. `make test-edge` checks the edge's route contract in both modes on throwaway containers, without touching a running installation.
+Host names come from the first-run wizard: the portal writes them to `installation.json` in the `atlas-installation` volume and the edge picks up a change within 5 seconds, without a restart. `ATLAS_PORTAL_HOST`, `ATLAS_TRACKING_HOST` and `ATLAS_POSTBACK_HOST` in `env/edge.env`, when set, win over the wizard. Until setup is completed, the edge serves the setup wizard on plain HTTP for any name or IP, and over HTTPS on the server's public addresses. A new configuration that cannot be applied is logged and the previous one keeps serving; `docker compose --env-file env/compose.env exec edge atlas-edge-render` prints the configuration the edge would use now. `make test-edge` checks the edge's route contract in both modes on throwaway containers, without touching a running installation.
 
 ### Recommended network path (`proxy` mode)
 
@@ -670,9 +670,9 @@ Name the proxy's subnet in `ATLAS_EDGE_TRUSTED_PROXY_CIDR` (`env/edge.env`) and 
 
 ### DNS and certificates
 
-Create A/AAAA records for the portal, tracking and (optional) postback names; the wizard shows them and checks each one. In `direct` mode the edge issues the certificates itself; in `proxy` mode issue them on your proxy.
+Create A/AAAA records for the portal, tracking and (optional) postback names; the wizard and Settings → Domains show them and check each one. In `direct` mode the edge issues the certificates itself, and the portal shows the reason when the certificate authority refuses (closed port 80, a DNS record pointing elsewhere, a rate limit, a CAA record); in `proxy` mode issue them on your proxy.
 
-Changing a tracking domain later is done in the portal by adding the new domain as an alias and retiring the old one, so links already handed out keep working. The license must cover the new domain first.
+The Network Owner declares and changes the domains in Settings → Domains: every new name is checked to lead to this server before it is saved. When a change removes an address that placed links may use, or no longer matches the license, the screen says so before saving; keep the old tracking name as an additional one so links already handed out keep working. With a license, the new domains must be covered by it — request a reissued license first. Domains set by configuration are read-only there.
 
 ## Kubernetes
 
@@ -809,7 +809,7 @@ Back up every stateful component:
 4. Redis persistence.
 5. Kafka data, or a documented rebuild strategy.
 6. Portal promo files (`portal-files`).
-7. The `atlas-license` volume (it holds the license; treat it as a secret) and, in `direct` mode, `edge-data` (certificates).
+7. The `atlas-license` volume (it holds the license; treat it as a secret) and, in `direct` mode, `edge-data` (certificates). The `edge-status` volume needs no backup: the edge rewrites it with every certificate attempt.
 8. The working env files or Kubernetes Secrets, encrypted separately.
 9. The release version, `SHA256SUMS` and the domain configuration.
 
@@ -875,11 +875,11 @@ The migrator is fail-closed and verifies the checksum of every applied file. Rea
 
 ### The wizard link does not open
 
-While setup is open, the edge serves the wizard on plain HTTP on the server's own address. Check that port 80 (or `ATLAS_HTTP_PORT` in `proxy` mode) is reachable, that `make status` shows every service healthy, and issue a fresh code with `atlas-setup-code` if the old one was used or locked.
+While setup is open, the edge serves the wizard on plain HTTP on the server's own address, and over HTTPS on its public address once that certificate is issued. Check that port 80 (or `ATLAS_HTTP_PORT` in `proxy` mode) is reachable, that `make status` shows every service healthy, and issue a fresh code with `atlas-setup-code` if the old one was used or locked.
 
 ### A certificate is not issued (`direct` mode)
 
-`docker compose --env-file env/compose.env logs edge` shows every attempt and its reason: DNS pointing elsewhere, a closed port 80 or 443, or a CAA record that does not allow Let's Encrypt.
+The wizard and Settings → Domains name the reason of the latest refusal next to the certificate state. `docker compose --env-file env/compose.env logs edge` shows every attempt and its full text: DNS pointing elsewhere, a closed port 80 or 443, or a CAA record that does not allow Let's Encrypt.
 
 ### The portal works but reports are empty
 

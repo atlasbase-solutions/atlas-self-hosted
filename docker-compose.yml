@@ -5,7 +5,7 @@ services:
     build:
       context: .
       dockerfile: images/frontend/Dockerfile
-    image: atlas-self-hosted/frontend:${ATLAS_VERSION:-1.1.7}
+    image: atlas-self-hosted/frontend:${ATLAS_VERSION:-1.1.8}
     env_file:
       - env/edge.env
     environment:
@@ -28,6 +28,9 @@ services:
       # The portal's projection of the installation's domains, read-only: the
       # edge picks up a change within 5 seconds and reloads without a restart.
       - atlas-installation:/var/lib/atlas/installation:ro
+      # Outcome of the latest certificate attempt per name (acme.json), for the
+      # portal to explain a missing certificate. The edge writes it.
+      - edge-status:/var/lib/atlas/edge-status
     depends_on:
       installation-volume-init:
         condition: service_completed_successfully
@@ -56,7 +59,7 @@ services:
     build:
       context: .
       dockerfile: images/portal/Dockerfile
-    image: atlas-self-hosted/portal:${ATLAS_VERSION:-1.1.7}
+    image: atlas-self-hosted/portal:${ATLAS_VERSION:-1.1.8}
     env_file:
       - env/portal.env
     environment:
@@ -75,6 +78,9 @@ services:
       # portal writes its tenant registry's domains here for the edge and
       # Gateway, at every start and after every first-run wizard step.
       - atlas-installation:/var/lib/atlas/installation
+      # The edge's certificate status (acme.json), read-only: the first-run
+      # wizard and Settings -> Domains show why a certificate is missing.
+      - edge-status:/var/lib/atlas/edge-status:ro
       # Uncomment to mount an offline license file for ATLAS_LICENSE_FILE
       # (env/portal.env), used with ATLAS_LICENSE_ISOLATED=true. Mount the SAME
       # file in the `gateway` service below: the license is per installation.
@@ -117,7 +123,7 @@ services:
     build:
       context: .
       dockerfile: images/gateway/Dockerfile
-    image: atlas-self-hosted/gateway:${ATLAS_VERSION:-1.1.7}
+    image: atlas-self-hosted/gateway:${ATLAS_VERSION:-1.1.8}
     env_file:
       - env/gateway.env
     volumes:
@@ -192,7 +198,7 @@ services:
     build:
       context: .
       dockerfile: images/gateway/Dockerfile
-    image: atlas-self-hosted/gateway:${ATLAS_VERSION:-1.1.7}
+    image: atlas-self-hosted/gateway:${ATLAS_VERSION:-1.1.8}
     entrypoint: ["/usr/local/bin/atlas-migrate"]
     command: ["-target=all", "-seed=false", "-timeout=2m"]
     env_file:
@@ -343,6 +349,9 @@ volumes:
   atlas-installation:
   # The edge's certificates and ACME account state (see the edge service).
   edge-data:
+  # The edge's certificate status for the portal. Not a backup item: the edge
+  # rewrites it on its next certificate attempt.
+  edge-status:
   portal-files:
   # Uncomment together with the matching mounts above to keep daily log files.
   # portal-logs:

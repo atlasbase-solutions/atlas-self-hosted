@@ -5,11 +5,12 @@
 FROM caddy:2.11.4-alpine
 
 # jq reads installation.json, the portal's projection of the installation's
-# domains, when the Caddyfile is rendered.
+# domains, when the Caddyfile is rendered, and writes the certificate status.
 RUN apk add --no-cache jq
 
 COPY --chmod=0555 config/caddy/render.sh /usr/local/bin/atlas-edge-render
 COPY --chmod=0555 config/caddy/entrypoint.sh /usr/local/bin/atlas-edge
+COPY --chmod=0555 config/caddy/acme-status.sh /usr/local/bin/atlas-edge-acme-status
 COPY artifacts/frontend /srv/spa
 
 # Certificates and ACME account state live in /data (the edge-data volume):

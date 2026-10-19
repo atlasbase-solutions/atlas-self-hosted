@@ -479,6 +479,30 @@ wait_for() {
     return 0
 }
 
+# https_on_address succeeds once the edge serves this server's address over
+# HTTPS with a certificate the browser trusts (Let's Encrypt issues one for the
+# address itself). The request goes to the local edge, so the provider's NAT and
+# firewall do not matter; the edge picks the certificate without SNI.
+https_on_address() {
+    curl -fsS -m 10 --connect-to "$1:443:127.0.0.1:443" "https://$1/api/setup/status" </dev/null >/dev/null 2>&1
+}
+
+# wait_https_on_address gives the certificate authority up to two minutes to
+# issue the address certificate; without it the wizard opens over HTTP and
+# explains what is missing.
+wait_https_on_address() {
+    tries=24
+    while [ "$tries" -gt 0 ]; do
+        # The first trusted handshake ends the wait.
+        if https_on_address "$1"; then
+            return 0
+        fi
+        tries=$((tries - 1))
+        sleep 5
+    done
+    return 1
+}
+
 # setup_status prints the wizard's public status through the edge.
 setup_status() {
     curl -fsS -m 10 "http://127.0.0.1:$http_port/api/setup/status" </dev/null 2>/dev/null || true
@@ -625,7 +649,12 @@ if [ -z "\$code" ]; then
     cat "\$err" >&2
     exit 1
 fi
-link="http://$link_host$port_suffix/setup#code=\$code"
+scheme=http
+# Over HTTPS once the address has a trusted certificate (direct mode only).
+if [ '$edge_mode' = direct ] && [ '$behind_nat' = 0 ] && curl -fsS -m 10 --connect-to '$link_host:443:127.0.0.1:443' 'https://$link_host/api/setup/status' </dev/null >/dev/null 2>&1; then
+    scheme=https
+fi
+link="\$scheme://$link_host$port_suffix/setup#code=\$code"
 umask 077
 printf 'Atlas first-run wizard: %s\n' "\$link" >'$setup_file'
 printf '%s\n' "\$link"
@@ -769,13 +798,25 @@ main() {
         wait_for 'the portal is not ready yet' compose exec -T portal wget -qO- http://127.0.0.1:11082/health/ready </dev/null
     fi
 
+    # The wizard link uses HTTPS when the edge serves this server's public
+    # address with a trusted certificate; behind NAT or in proxy mode the address
+    # has no certificate of its own and the link stays HTTP.
+    link_scheme=http
+    if [ -z "$owner_email" ] && [ "$setup_completed" -eq 0 ] && [ "$edge_mode" = direct ] && [ "$behind_nat" -eq 0 ] && [ "$link_host" != SERVER-IP ]; then
+        info 'Waiting for the HTTPS certificate on this server address'
+        # Without a certificate in time the link stays HTTP; the wizard shows why.
+        if wait_https_on_address "$link_host"; then
+            link_scheme=https
+        fi
+    fi
+
     # --- 9. Result -----------------------------------------------------------------
 
     if [ -z "$owner_email" ] && [ "$setup_completed" -eq 0 ]; then
         write_motd
         # The link is saved only when there is a code to put in it.
         if [ -n "$display_code" ]; then
-            link="http://$link_host$port_suffix/setup#code=$display_code"
+            link="$link_scheme://$link_host$port_suffix/setup#code=$display_code"
             printf 'Atlas first-run wizard: %s\n' "$link" | install_root_file 0600 "$setup_file"
         fi
 
@@ -797,6 +838,10 @@ main() {
         # What the network has to allow depends on who terminates TLS.
         if [ "$edge_mode" = direct ]; then
             printf 'Keep ports 80 and 443 open to the internet: the wizard checks your domains on port 80, and certificates are issued automatically.\n'
+            # Without the address certificate the wizard opens over HTTP and names the reason.
+            if [ "$link_scheme" = http ] && [ "$behind_nat" -eq 0 ]; then
+                printf 'The HTTPS certificate for this address is not issued yet; the wizard opens over HTTP and shows why (usually ports 80/443 closed at the provider). Domains can be added later, in Settings -> Domains.\n'
+            fi
         else
             printf 'Proxy mode: point your TLS proxy at port %s of this server.\n' "$proxy_http_port"
         fi

@@ -4,6 +4,19 @@ All notable changes to the Atlas Self-Hosted distribution are documented here, n
 
 Version 1.0.9 is the first public release of this repository. Its section lists every customer-facing change made since the 1.0.0 baseline, so that an installation made from an earlier private build can see everything it is about to receive.
 
+## 1.1.8 — 2026-10-19
+
+Changes since 1.1.7.
+
+### Features
+
+- The setup wizard and Settings → Domains now explain why a certificate is still missing — for example, that port 80 is closed, that the DNS record points elsewhere, or that the certificate authority is rate-limiting the name — instead of only waiting. The reasons come from a status file written by the bundled edge on a new `edge-status` volume; without it the portal works as before and shows no reasons.
+- While no portal domain is declared, the edge in `direct` mode also serves HTTPS on the server's public address, with a short-lived Let's Encrypt certificate for the address itself; if that certificate cannot be issued, it falls back to a certificate of its own authority, which the browser warns about. A setup finished without domains keeps the portal on HTTPS at that address, plain HTTP there redirects to it, and once a portal domain is declared the address redirects to the domain instead.
+- The one-line installer now waits up to two minutes for the HTTPS certificate on the server's public address and, once it is issued, saves and prints the first-run wizard link as `https://<server address>/setup#code=…`; `atlas-setup-code` does the same. When the certificate is not issued in time, the link stays on plain HTTP and the installer says why that usually happens.
+- Until a portal domain is declared, links in emails sent by the portal (invitations, password resets, payout documents) point to the server's public address instead of being left empty. Without domains, "Data for the manager" no longer offers to request a license, which is issued for the domains: it explains that the domains come first and, in Settings → License, leads to Settings → Domains.
+- The network owner can now declare and change the installation's domains in Settings → Domains, including for the first time after finishing setup without them. Every new name is checked to lead to this server before it is saved, certificates for new names are issued automatically, and the screen warns beforehand when a change removes an address that placed links may use or no longer matches the license.
+- The first-run wizard can now be finished without domains: "I'll add domains later" takes the owner step to HTTPS on the server's public address, where the owner account is created. The wizard says beforehand whether that address has a public certificate or a certificate of the server's own authority that the browser will warn about, and the license step explains that a license is issued for the domains, which are added after signing in.
+
 ## 1.1.7 — 2026-10-19
 
 Changes since 1.1.6.

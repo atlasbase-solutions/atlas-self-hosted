@@ -45,6 +45,13 @@ fi
 mv "$conf.new" "$conf"
 log "starting: mode=${ATLAS_EDGE_MODE:-direct} installation=$seen"
 
+# In `direct` mode the edge obtains certificates itself, and the outcome of
+# every attempt is kept for the portal (see atlas-edge-acme-status). The
+# follower dies with the container; nothing else depends on it.
+if [ "${ATLAS_EDGE_MODE:-direct}" = direct ]; then
+    atlas-edge-acme-status &
+fi
+
 caddy run --config "$conf" --adapter caddyfile &
 caddy_pid=$!
 

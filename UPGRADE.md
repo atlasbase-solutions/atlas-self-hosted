@@ -6,6 +6,14 @@ A new installation needs none of this: follow "One-line installation" or "Quick 
 
 Since 1.0.0 every database schema change arrives as a new numbered migration, and each migration runner records the checksum of every file it applied. An installation of 1.0.0 or later is therefore upgraded in place, without recreating its databases. If the installed version is older than the oldest supported source version of the release you are installing, stop and contact Atlas support before changing binaries or images.
 
+## Upgrading to 1.1.8
+
+Supported source versions: 1.0.0 and later.
+
+Release-specific steps, in order:
+
+1. **manual** (1.1.8): Only if you keep a modified copy of `docker-compose.yml`: add the `edge-status` volume, mounted at `/var/lib/atlas/edge-status` in the `edge` service and at the same path read-only (`:ro`) in the `portal` service, exactly as in the distribution file. Without it everything keeps working, but certificate problems are not explained in the portal. The volume needs no backup.
+
 ## Upgrading to 1.1.7
 
 Supported source versions: 1.0.0 and later.
