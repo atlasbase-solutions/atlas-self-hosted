@@ -4,6 +4,18 @@ All notable changes to the Atlas Self-Hosted distribution are documented here, n
 
 Version 1.0.9 is the first public release of this repository. Its section lists every customer-facing change made since the 1.0.0 baseline, so that an installation made from an earlier private build can see everything it is about to receive.
 
+## 1.1.6 — 2026-10-19
+
+Changes since 1.1.5.
+
+### Fixes
+
+- The one-line installer no longer stops silently after "Registering the setup code" when it is run as `curl … | sh`: it now always finishes, prints and saves the first-run wizard link and installs `atlas-setup-code`. It waits for a server that is still installing its own updates, retries dropped downloads and a slow first start, shows the state and recent log of a service that does not start, and running the same command again continues an existing installation instead of refusing it.
+
+### Operations
+
+- The minimum server is now 4 vCPU, 8 GB of memory and 100 GB of disk, and the one-line installer warns below those figures. For reference, such a server takes about 3,000 tracking requests per second at peak — roughly 259 million events a day; that is a ceiling, not a working level, so leave headroom. The README now also states the capacity of larger installs: an all-in-one VPS with 12 CPU takes up to 75,000 requests per second (about 6.48 billion events a day), and in a distributed install each edge node takes up to 100,000 (about 8.64 billion a day).
+
 ## 1.1.5 — 2026-10-16
 
 Changes since 1.1.4.

@@ -333,16 +333,18 @@ The edge is Caddy. It serves the web application, routes each host to its servic
 ### Minimum server
 
 - a Linux x86-64 server; the one-line installer is written for current Debian and Ubuntu releases (Debian 12 and 13, Ubuntu 22.04, 24.04 and 26.04 LTS);
-- 2 vCPU, 4 GB RAM, 100 GB of persistent storage;
+- 4 vCPU, 8 GB RAM, 100 GB of persistent storage;
 - Docker Engine with the Compose v2 plugin, in a release that still receives security updates (the installer installs the current one);
 - two DNS names — portal and tracking — pointing at the server, plus an optional third one for postbacks;
 - in `direct` mode, ports 80 and 443 reachable from the internet; in `proxy` mode, your own TLS reverse proxy or load balancer.
 
 ### Throughput
 
-A single Linux server with **2 CPU cores and 4 GB of RAM**, running the complete stack, accepts about **800 requests per second** of tracking traffic — clicks, impressions and postbacks. For scale: that rate held for a full day would be roughly **69 million events** (800 × 86,400 ≈ 69.1 million).
+For reference: a single Linux server at the minimum — **4 CPU cores and 8 GB of RAM**, running the complete stack — accepts about **3,000 requests per second** of tracking traffic at peak: clicks, impressions and postbacks. That rate held for a full day would be roughly **259 million events** (3,000 × 86,400 ≈ 259.2 million).
 
-800 requests per second is the **peak** such a server can take, not a level to run at every day. For stable operation, give the installation more resources than the minimum, so that traffic spikes, report queries and background work have headroom. You can scale the server's resources at any time as your actual traffic grows — the installation does not need to be sized for the future on day one.
+Larger single machines and distributed installs go further. An **all-in-one VPS with 12 CPU**, running every service, accepts up to **75,000 requests per second** at peak — roughly **6.48 billion events a day** (75,000 × 86,400). In a **distributed install**, where the services run on separate nodes, **each edge node** accepts up to **100,000 requests per second** — roughly **8.64 billion events a day** (100,000 × 86,400); add edge nodes as traffic grows, the license does not limit their number.
+
+These figures are **peaks**, not a level to run at every day. For stable operation, give the installation more resources than the minimum, so that traffic spikes, report queries and background work have headroom. You can scale the server's resources at any time as your actual traffic grows — the installation does not need to be sized for the future on day one.
 
 ### Recommended starting point for production
 
@@ -393,7 +395,7 @@ The client-facing reference for Settings → License and the activation screen i
 
 ## One-line installation
 
-For a clean **Debian or Ubuntu x86-64 server** (at least 2 vCPU, 4 GB of memory and 100 GB of disk), run as root or with sudo:
+For a clean **Debian or Ubuntu x86-64 server** (at least 4 vCPU, 8 GB of memory and 100 GB of disk), run as root or with sudo:
 
 ```bash
 curl -fsSL https://raw.githubusercontent.com/atlasbase-solutions/atlas-self-hosted/main/scripts/install.sh | sudo sh
@@ -401,12 +403,14 @@ curl -fsSL https://raw.githubusercontent.com/atlasbase-solutions/atlas-self-host
 
 The installer asks no questions. It:
 
-1. checks the server (a smaller one gets a warning, not a refusal; in `direct` mode ports 80 and 443 must be free);
+1. checks the server (a smaller one gets a warning, not a refusal; in `direct` mode ports 80 and 443 must be free, and the installer names the program that holds a busy one);
 2. installs Docker Engine and the Docker Compose plugin from Docker's official apt repository when they are not already available — it changes nothing else on the host;
 3. downloads this distribution, verifies every binary against `SHA256SUMS` and every file of the distribution against the release index signed with the Atlas release key, and refuses to continue if the distribution is not signed by Atlas or any file is changed, missing or not listed in the index;
 4. creates `/opt/atlas`, generates independent random database and encryption secrets and writes the service env files (readable by root only);
 5. builds the images, starts the Compose stack and checks it from inside the server;
 6. registers a one-time **setup code** and saves the wizard link `http://<server IP>/setup#code=...` to `/root/atlas-setup.txt` (readable by root only). The link is also printed when you run the command in a terminal, and the login message reminds you about it until setup is complete.
+
+Transient failures — a package mirror, GitHub or an image registry dropping the connection, a fresh server still busy with its own package updates, a service slow on its first start — are waited for and retried. **Interrupted, or a step did not complete? Run the same command again.** It continues the installation in `/opt/atlas`: starts the stack, checks it and prints a fresh wizard link. It never downloads over, regenerates or deletes anything of an existing installation. When a service does not become healthy, the installer prints the state of every service and the recent log of each failing one.
 
 Open the link in a browser. The **first-run wizard** asks for the network name and time zone, the portal and tracking domains (it shows the DNS records to create and checks them), creates the Network Owner over HTTPS on your portal domain, and then offers license activation and email settings. Certificates are issued automatically once a domain points at the server. Nothing about your network is typed into the server.
 
@@ -437,7 +441,7 @@ All optional, passed as environment variables (`curl ... | sudo VAR=value sh`):
 
 | Variable | Default | Meaning |
 |---|---|---|
-| `ATLAS_INSTALL_DIR` | `/opt/atlas` | installation directory; the installer never overwrites an existing one |
+| `ATLAS_INSTALL_DIR` | `/opt/atlas` | installation directory; an Atlas installation already there is continued, never overwritten, and any other existing directory is refused |
 | `ATLAS_REPOSITORY` | this repository | an approved HTTPS mirror |
 | `ATLAS_SOURCE_DIR` | — | an already downloaded distribution directory, for a server without GitHub access; verified the same way |
 | `ATLAS_EDGE_MODE` | `direct` | `proxy` to run behind your own TLS load balancer (see [Edge modes](#edge-modes)) |
@@ -598,7 +602,7 @@ The `config-quarantine` Kafka topic keeps configuration events the Gateway could
 
 ```sh
 docker compose --env-file env/compose.env run --rm \
-  --entrypoint atlas-update-check portal -installed 1.1.5
+  --entrypoint atlas-update-check portal -installed 1.1.6
 ```
 
 The tool presents the installation's license to Atlas, verifies the signed answer and reports the current release. Atlas answers only a valid license; otherwise the tool shows the license status. To download the release, mount an operator-owned writable directory and add `-download /downloads/<version>` (a new or empty directory): the tool fetches the `vX.Y.Z` archive of this repository from GitHub, unpacks it and keeps it only if every file matches the Atlas release signature. It installs and restarts nothing; read `UPGRADE.md` before replacing a running installation. An isolated installation can download the release on another machine and check the copied directory with `atlas-update-check -verify`.
