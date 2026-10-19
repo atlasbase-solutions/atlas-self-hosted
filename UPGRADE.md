@@ -6,6 +6,12 @@ A new installation needs none of this: follow "One-line installation" or "Quick 
 
 Since 1.0.0 every database schema change arrives as a new numbered migration, and each migration runner records the checksum of every file it applied. An installation of 1.0.0 or later is therefore upgraded in place, without recreating its databases. If the installed version is older than the oldest supported source version of the release you are installing, stop and contact Atlas support before changing binaries or images.
 
+## Upgrading to 1.1.7
+
+Supported source versions: 1.0.0 and later.
+
+No release-specific steps: follow the standard upgrade procedure.
+
 ## Upgrading to 1.1.6
 
 Supported source versions: 1.0.0 and later.
@@ -188,7 +194,7 @@ Steps:
 
 1. Keep the license string at hand (the value of `ATLAS_LICENSE_TOKEN`).
 2. Clear `ATLAS_LICENSE_TOKEN` in both `env/portal.env` and `env/gateway.env` and recreate the two services: `docker compose --env-file env/compose.env up -d portal gateway`.
-3. Open the portal: it shows the activation screen. Paste the license and click **Activate**, wait until traffic intake is confirmed, then sign in. From now on, replace, restore or remove the license in Settings → License.
+3. Sign in to the portal as the Network Owner: it opens in restricted mode with a banner. Click **Install license**, paste the license in Settings → License and wait until traffic intake confirms it. From now on, replace, restore or remove the license there.
 
 Between steps 2 and 3 Atlas does not serve traffic, so do this in a maintenance window. To go back, set `ATLAS_LICENSE_TOKEN` again and recreate the services; the file in the volume is then ignored.
 

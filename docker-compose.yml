@@ -5,7 +5,7 @@ services:
     build:
       context: .
       dockerfile: images/frontend/Dockerfile
-    image: atlas-self-hosted/frontend:${ATLAS_VERSION:-1.1.6}
+    image: atlas-self-hosted/frontend:${ATLAS_VERSION:-1.1.7}
     env_file:
       - env/edge.env
     environment:
@@ -56,7 +56,7 @@ services:
     build:
       context: .
       dockerfile: images/portal/Dockerfile
-    image: atlas-self-hosted/portal:${ATLAS_VERSION:-1.1.6}
+    image: atlas-self-hosted/portal:${ATLAS_VERSION:-1.1.7}
     env_file:
       - env/portal.env
     environment:
@@ -66,8 +66,8 @@ services:
       - portal-files:/var/lib/atlas/portal-files
       - antifraud-feed:/var/lib/atlas/antifraud
       # License installed from the portal (ATLAS_LICENSE_TOKEN_FILE in
-      # env/portal.env): the activation screen before sign-in and
-      # Settings → License write it here atomically. Portal mounts the volume
+      # env/portal.env): Settings → License and the activation page before
+      # sign-in write it here atomically. Portal mounts the volume
       # read-write, Gateway read-only; `license-volume-init` hands it to
       # uid 10001 before either service starts.
       - atlas-license:/var/lib/atlas/license
@@ -117,7 +117,7 @@ services:
     build:
       context: .
       dockerfile: images/gateway/Dockerfile
-    image: atlas-self-hosted/gateway:${ATLAS_VERSION:-1.1.6}
+    image: atlas-self-hosted/gateway:${ATLAS_VERSION:-1.1.7}
     env_file:
       - env/gateway.env
     volumes:
@@ -192,7 +192,7 @@ services:
     build:
       context: .
       dockerfile: images/gateway/Dockerfile
-    image: atlas-self-hosted/gateway:${ATLAS_VERSION:-1.1.6}
+    image: atlas-self-hosted/gateway:${ATLAS_VERSION:-1.1.7}
     entrypoint: ["/usr/local/bin/atlas-migrate"]
     command: ["-target=all", "-seed=false", "-timeout=2m"]
     env_file:

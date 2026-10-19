@@ -1,0 +1,1 @@
+import{i as e,r as t}from"./api-BeFKgL2l.js";export{t as isLicenseWorking,e as licenseActivationApi};

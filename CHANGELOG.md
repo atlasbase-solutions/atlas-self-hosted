@@ -4,6 +4,14 @@ All notable changes to the Atlas Self-Hosted distribution are documented here, n
 
 Version 1.0.9 is the first public release of this repository. Its section lists every customer-facing change made since the 1.0.0 baseline, so that an installation made from an earlier private build can see everything it is about to receive.
 
+## 1.1.7 — 2026-10-19
+
+Changes since 1.1.6.
+
+### Features
+
+- An installation without a confirmed license no longer locks everyone out of the portal. You can sign in with any role and work with your data and settings, while a banner on every screen names the reason and gives the network owner an "Install license" button that opens Settings → License. Until a license is confirmed, traffic intake stays stopped, offer creation, closing payout periods, issuing, confirming, paying and sending payout documents are unavailable, and the public API answers `403 license_required`. Sending a payout document to a partner is now frozen in the same way as the other payout actions. The anonymous activation page is still available from the sign-in screen at `/license/activate` for an installation where nobody can sign in.
+
 ## 1.1.6 — 2026-10-19
 
 Changes since 1.1.5.

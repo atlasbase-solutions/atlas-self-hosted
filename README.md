@@ -240,6 +240,7 @@ This section describes the business surface in detail so that an operator, a sec
 
 - A new installation opens a browser wizard protected by a one-time setup code: network name and time zone, the portal and tracking domains (with the DNS records to create and a live check of each), the Network Owner account created over HTTPS on your own domain, then license activation and email.
 - The license is activated by pasting it into the portal; the Network Owner can later replace, restore or remove it in Settings → License.
+- Without a license the portal opens in a restricted mode: everyone can sign in and work with data and settings, a banner names the reason, and traffic intake and money actions wait for the license.
 
 ## Roles and access model
 
@@ -362,7 +363,7 @@ The binaries are built for `linux/amd64` only. Docker cannot convert them for an
 
 ## Licensing
 
-Atlas Self-Hosted runs on a license issued to your company for your installation's domains — the portal domain and the tracking domain (and the postback domain, where you use one). **An installation without a confirmed license does not serve traffic**: the portal shows the license activation screen instead of the sign-in page, and the tracking domains do not accept clicks or postbacks. Health and version endpoints keep answering, so the state is easy to diagnose.
+Atlas Self-Hosted runs on a license issued to your company for your installation's domains — the portal domain and the tracking domain (and the postback domain, where you use one). **An installation without a confirmed license does not serve traffic**: the tracking domains do not accept clicks or postbacks. The portal stays open in a **restricted mode** — every role can sign in and work with data and settings, a banner on every screen names the exact reason, and creating offers, closing payout periods and issuing, confirming, paying or sending payout documents are unavailable; the public API (`/api/v1`) answers `403 license_required`. Health and version endpoints keep answering, so the state is easy to diagnose.
 
 To get started, request a license on [the self-hosted page](https://getatlasbase.com/en/self-hosted/) and mention the promo code **`GITHUB_PROMO_4M`**: the first four months of Atlas Self-Hosted are free. For a short evaluation there is also a [demo license](https://docs.getatlasbase.com/en/self-hosted/demo-license/). A license is issued for exact domain names, so decide on them first.
 
@@ -370,8 +371,8 @@ To get started, request a license on [the self-hosted page](https://getatlasbase
 
 On Docker Compose the simplest path is to activate the license in the portal itself — no file to edit and no restart:
 
-- **Activation before sign-in.** Until the installation has a confirmed license, the portal shows an activation screen with the reason, the installation's domains, its installation ID and version (with a copy button for your Atlas account manager), and a field for the license. Paste it and click **Activate**; when the portal and traffic intake have both confirmed it, the screen offers **Sign in**.
-- **Settings → License (Network Owner only).** Shows where the license comes from and whether traffic intake has confirmed it, and lets the owner **replace** the license, **restore** the previous one or **remove** it. Removing the license stops Atlas until a license is installed again.
+- **Settings → License (Network Owner only).** The banner's **Install license** button opens it. It shows the installation's domains, its installation ID and version (with a copy button for your Atlas account manager), where the license comes from and whether traffic intake has confirmed it, and lets the owner install the license, **replace** it, **restore** the previous one or **remove** it. The restrictions lift without a restart once traffic intake confirms the license; removing it stops traffic intake and returns the portal to restricted mode.
+- **Activation before sign-in.** If nobody can sign in, the sign-in screen links to an activation page with the same field. It is available only while the installation is not activated.
 
 The license installed in the portal is kept in the `atlas-license` volume; back it up with the other volumes.
 
@@ -391,7 +392,7 @@ Both services confirm the license with Atlas over the internet, so the installat
 
 Renew the license before its term ends; Settings → License shows the term. After the term ends, tracking keeps working for a grace period so that no traffic is lost, while administrative actions — creating offers, closing payout periods and confirming or paying payouts — are paused until the license is renewed. Nothing is lost: everything resumes once the renewed license is confirmed.
 
-The client-facing reference for Settings → License and the activation screen is at [docs.getatlasbase.com](https://docs.getatlasbase.com/en/self-hosted/license/).
+The client-facing reference for Settings → License, the restricted mode and the activation page is at [docs.getatlasbase.com](https://docs.getatlasbase.com/en/self-hosted/license/).
 
 ## One-line installation
 
@@ -451,7 +452,7 @@ All optional, passed as environment variables (`curl ... | sudo VAR=value sh`):
 | `ATLAS_PORTAL_DOMAIN`, `ATLAS_TRACKING_DOMAIN` | — | both or neither: domains set by configuration; the wizard shows them read-only |
 | `ATLAS_OWNER_EMAIL`, `ATLAS_OWNER_PASSWORD` | — | both or neither, together with the domains: the Network Owner is created at startup and there is no wizard. The password is never printed and must be replaced at the first sign-in |
 
-The installer has no version selector: the repository exposes one current release. The license is not an installer input: activate it in the portal after the wizard. Until then the stack is healthy but application traffic is refused, as described in [Licensing](#licensing).
+The installer has no version selector: the repository exposes one current release. The license is not an installer input: activate it in the portal after the wizard. Until then the stack is healthy, the portal works in restricted mode and traffic is refused, as described in [Licensing](#licensing).
 
 A server behind the provider's NAT has no public address on its network interfaces. The link then shows its private address and the installer says so: replace it with the address you connect to, or pass `ATLAS_PUBLIC_IPS`.
 
@@ -602,7 +603,7 @@ The `config-quarantine` Kafka topic keeps configuration events the Gateway could
 
 ```sh
 docker compose --env-file env/compose.env run --rm \
-  --entrypoint atlas-update-check portal -installed 1.1.6
+  --entrypoint atlas-update-check portal -installed 1.1.7
 ```
 
 The tool presents the installation's license to Atlas, verifies the signed answer and reports the current release. Atlas answers only a valid license; otherwise the tool shows the license status. To download the release, mount an operator-owned writable directory and add `-download /downloads/<version>` (a new or empty directory): the tool fetches the `vX.Y.Z` archive of this repository from GitHub, unpacks it and keeps it only if every file matches the Atlas release signature. It installs and restarts nothing; read `UPGRADE.md` before replacing a running installation. An isolated installation can download the release on another machine and check the copied directory with `atlas-update-check -verify`.
@@ -894,7 +895,7 @@ The most dangerous configuration error is a different `ATLAS_CONFIG_SECRET_KEY` 
 
 ### Portal or Gateway refuse traffic (`license_required`, no click intake)
 
-Health, `/version` and metrics stay green: this is the license refusal described in [Licensing](#licensing), not an outage. The portal's activation screen names the reason. If the license is set by configuration, check that it is identical in `env/portal.env` and `env/gateway.env` (or in the shared Kubernetes Secret), that outbound HTTPS to Atlas works unless the installation runs in isolated mode, and that a mounted license file is readable by uid 10001.
+Health, `/version` and metrics stay green: this is the license refusal described in [Licensing](#licensing), not an outage. The portal stays open in restricted mode, and its banner names the reason. If the license is set by configuration, check that it is identical in `env/portal.env` and `env/gateway.env` (or in the shared Kubernetes Secret), that outbound HTTPS to Atlas works unless the installation runs in isolated mode, and that a mounted license file is readable by uid 10001.
 
 ### A service stops at startup with `permission denied` on a log file
 
