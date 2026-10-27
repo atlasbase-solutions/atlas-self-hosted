@@ -4,6 +4,14 @@ All notable changes to the Atlas Self-Hosted distribution are documented here, n
 
 Version 1.0.9 is the first public release of this repository. Its section lists every customer-facing change made since the 1.0.0 baseline, so that an installation made from an earlier private build can see everything it is about to receive.
 
+## 1.2.0 — 2026-10-27
+
+Changes since 1.1.8.
+
+### Features
+
+- A network can now review its advertisers' offers. In Settings → Advertisers the network owner chooses whether the network approves an offer's first launch only, or also risky changes of a launched offer (target address, landings, payouts and rates, commission program, a weaker postback mode). An advertiser's request waits in the "Awaiting review" queue; an approval applies it exactly as submitted, a rejection returns it with a reason. A trusted advertiser can be marked "No review". Review is off by default, so existing networks keep working as before.
+
 ## 1.1.8 — 2026-10-19
 
 Changes since 1.1.7.

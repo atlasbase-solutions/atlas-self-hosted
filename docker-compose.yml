@@ -5,7 +5,7 @@ services:
     build:
       context: .
       dockerfile: images/frontend/Dockerfile
-    image: atlas-self-hosted/frontend:${ATLAS_VERSION:-1.1.8}
+    image: atlas-self-hosted/frontend:${ATLAS_VERSION:-1.2.0}
     env_file:
       - env/edge.env
     environment:
@@ -59,7 +59,7 @@ services:
     build:
       context: .
       dockerfile: images/portal/Dockerfile
-    image: atlas-self-hosted/portal:${ATLAS_VERSION:-1.1.8}
+    image: atlas-self-hosted/portal:${ATLAS_VERSION:-1.2.0}
     env_file:
       - env/portal.env
     environment:
@@ -123,7 +123,7 @@ services:
     build:
       context: .
       dockerfile: images/gateway/Dockerfile
-    image: atlas-self-hosted/gateway:${ATLAS_VERSION:-1.1.8}
+    image: atlas-self-hosted/gateway:${ATLAS_VERSION:-1.2.0}
     env_file:
       - env/gateway.env
     volumes:
@@ -198,7 +198,7 @@ services:
     build:
       context: .
       dockerfile: images/gateway/Dockerfile
-    image: atlas-self-hosted/gateway:${ATLAS_VERSION:-1.1.8}
+    image: atlas-self-hosted/gateway:${ATLAS_VERSION:-1.2.0}
     entrypoint: ["/usr/local/bin/atlas-migrate"]
     command: ["-target=all", "-seed=false", "-timeout=2m"]
     env_file:

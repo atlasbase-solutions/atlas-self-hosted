@@ -6,6 +6,15 @@ A new installation needs none of this: follow "One-line installation" or "Quick 
 
 Since 1.0.0 every database schema change arrives as a new numbered migration, and each migration runner records the checksum of every file it applied. An installation of 1.0.0 or later is therefore upgraded in place, without recreating its databases. If the installed version is older than the oldest supported source version of the release you are installing, stop and contact Atlas support before changing binaries or images.
 
+## Upgrading to 1.2.0
+
+Supported source versions: 1.0.0 and later.
+
+Release-specific steps, in order:
+
+1. **migration** (1.2.0): 1. The portal applies tenant migration `0026` on startup. It adds the network's review mode (default `off`), an advertiser's "No review" flag (default off) and a table of review requests. Existing rows are not rewritten.
+   2. API clients acting for an advertiser should expect `202 Accepted` with a `review` object from offer activation and from changes that go to review, and `409` with `offer_under_review` while a launch request is open.
+
 ## Upgrading to 1.1.8
 
 Supported source versions: 1.0.0 and later.
