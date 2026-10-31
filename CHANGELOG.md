@@ -4,6 +4,14 @@ All notable changes to the Atlas Self-Hosted distribution are documented here, n
 
 Version 1.0.9 is the first public release of this repository. Its section lists every customer-facing change made since the 1.0.0 baseline, so that an installation made from an earlier private build can see everything it is about to receive.
 
+## 1.2.1 — 2026-10-31
+
+Changes since 1.2.0.
+
+### Security
+
+- The portal and the gateway are built with Go 1.27.3 and `golang.org/x/net` v0.60.0, which close published vulnerabilities in the HTTP/1 and HTTP/2 stack, TLS, certificate verification, MIME header parsing and `html/template`.
+
 ## 1.2.0 — 2026-10-27
 
 Changes since 1.1.8.

@@ -386,7 +386,7 @@ Where the domains are set by configuration rather than in the first-run wizard (
 
 Both services confirm the license with Atlas over the internet, so the installation needs outbound HTTPS (see [Firewall policy](#firewall-policy)). An installation with no outbound access at all can run in isolated mode (`ATLAS_LICENSE_ISOLATED=true` with an offline license file); ask your Atlas contact for one.
 
-**What is sent to Atlas.** The license, the product version, which service is asking, the installation ID and host name, and the domain names the installation serves. **No customer data is sent** — no traffic, partner, advertiser or end-user data, and no credentials. The installation ID is shown in Settings → License; quote it when you contact support. Clause 5.8 of the [Atlas License Agreement](https://docs.getatlasbase.com/en/legal/license/) states the same in contractual terms.
+**What is sent to Atlas.** The installation contacts Atlas in four cases only. *License validation* (periodically, from Portal and Gateway): the license, the delivery model, the product version, which service is asking, the installation ID, the host name, a one-time request value and a flag for a possible system clock discrepancy; if traffic arrived on domains the license does not cover, also those domain names with their request counts. *The update check* (only when you run `atlas-update-check`): the license, the delivery model, the installed version and the license ID. *Reputation data for anti-fraud* (once a day): the license and the delivery model. *Anti-fraud rule quality statistics* — only if you turn on "Anonymised telemetry" in the anti-fraud settings, off by default: daily decision counts with no identifiers, IP addresses, domains or amounts. Atlas also records the IP address and User-Agent of each request. **No customer data is sent** — no traffic, partner, advertiser or end-user data, and no credentials. In isolated mode the installation sends nothing to Atlas at all. The installation ID is shown in Settings → License; quote it when you contact support. Clause 5.8 of the [Atlas License Agreement](https://docs.getatlasbase.com/en/legal/license/) states the same in contractual terms, and [Security and data sent to Atlas](https://docs.getatlasbase.com/en/self-hosted/security/) covers storage, access and outbound connections.
 
 ### Expiry
 
@@ -603,7 +603,7 @@ The `config-quarantine` Kafka topic keeps configuration events the Gateway could
 
 ```sh
 docker compose --env-file env/compose.env run --rm \
-  --entrypoint atlas-update-check portal -installed 1.2.0
+  --entrypoint atlas-update-check portal -installed 1.2.1
 ```
 
 The tool presents the installation's license to Atlas, verifies the signed answer and reports the current release. Atlas answers only a valid license; otherwise the tool shows the license status. To download the release, mount an operator-owned writable directory and add `-download /downloads/<version>` (a new or empty directory): the tool fetches the `vX.Y.Z` archive of this repository from GitHub, unpacks it and keeps it only if every file matches the Atlas release signature. It installs and restarts nothing; read `UPGRADE.md` before replacing a running installation. An isolated installation can download the release on another machine and check the copied directory with `atlas-update-check -verify`.
@@ -647,7 +647,7 @@ TLS load balancer / reverse proxy
 - Never expose PostgreSQL 5432, ClickHouse 8123/9000, Redis 6379, Kafka 19092 or the Gateway metrics port 9108 publicly. The Compose stack publishes none of them.
 - Restrict SSH and Docker access to your operations network.
 - Outbound from Portal and Gateway: HTTPS (TCP 443) to Atlas for the license check and the update check, unless the installation runs in isolated mode with an offline license file. If your firewall allows only named hosts, ask your Atlas contact for the list.
-- Outbound from the Portal: HTTPS to `antifraud.getatlasbase.com` when you have the reputation-data subscription; your SMTP relay when email is configured; `webrisk.googleapis.com:443` when the domain reputation check is turned on in Settings (off by default).
+- Outbound from the Portal: HTTPS to `antifraud.getatlasbase.com` for reputation data, once a day (the optional anti-fraud quality statistics go there too); your SMTP relay when email is configured; `webrisk.googleapis.com:443` when the domain reputation check is turned on in Settings (off by default).
 - Outbound from the Gateway: the receivers of your outbound postbacks.
 - Outbound from the edge in `direct` mode: the ACME certificate authorities (Let's Encrypt, with ZeroSSL as Caddy's fallback).
 

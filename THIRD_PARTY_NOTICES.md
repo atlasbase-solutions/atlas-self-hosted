@@ -1,6 +1,6 @@
 # Third-party notices
 
-Atlas Self-Hosted includes third-party software and data. This file lists them with their licenses, as those licenses require for distribution in binary form. It covers Atlas release 1.1.8 and is generated from the shipped binaries and the Portal web application's dependencies.
+Atlas Self-Hosted includes third-party software and data. This file lists them with their licenses, as those licenses require for distribution in binary form. It covers Atlas release 1.2.0 and is generated from the shipped binaries and the Portal web application's dependencies.
 
 Atlas itself is proprietary software; see `LICENSE.md`. Nothing in this file grants rights to Atlas.
 
@@ -39,7 +39,7 @@ The Docker Compose stack and the Kubernetes manifests run these public images. T
 
 | Module | Version | License |
 |---|---|---|
-| `Go standard library and runtime` | 1.27.1 | BSD-3-Clause |
+| `Go standard library and runtime` | 1.27.3 | BSD-3-Clause |
 | `github.com/beorn7/perks` | v1.0.1 | MIT |
 | `github.com/cespare/xxhash/v2` | v2.3.0 | MIT |
 | `github.com/google/uuid` | v1.6.0 | BSD-3-Clause |
@@ -66,7 +66,7 @@ The Docker Compose stack and the Kubernetes manifests run these public images. T
 | `go.uber.org/atomic` | v1.12.0 | MIT |
 | `golang.org/x/crypto` | v0.57.0 | BSD-3-Clause |
 | `golang.org/x/image` | v0.46.0 | BSD-3-Clause |
-| `golang.org/x/net` | v0.59.0 | BSD-3-Clause |
+| `golang.org/x/net` | v0.60.0 | BSD-3-Clause |
 | `golang.org/x/sync` | v0.23.0 | BSD-3-Clause |
 | `golang.org/x/sys` | v0.48.0 | BSD-3-Clause |
 | `golang.org/x/text` | v0.42.0 | BSD-3-Clause |
@@ -190,7 +190,7 @@ FROM, OUT OF THE USE OR INABILITY TO USE THE FONT SOFTWARE OR FROM
 OTHER DEALINGS IN THE FONT SOFTWARE.
 ```
 
-### Go standard library and runtime 1.27.1
+### Go standard library and runtime 1.27.3
 
 ```text
 Copyright 2009 The Go Authors.
@@ -2317,7 +2317,7 @@ THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ```
 
-### golang.org/x/net v0.59.0
+### golang.org/x/net v0.60.0
 
 ```text
 Copyright 2009 The Go Authors.

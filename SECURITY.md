@@ -2,7 +2,7 @@
 
 ## Reporting a vulnerability
 
-Do not report a suspected Atlas vulnerability in a public GitHub issue, pull request or discussion. Contact Atlas privately through [getatlasbase.com](https://getatlasbase.com/) and include:
+Do not report a suspected Atlas vulnerability in a public GitHub issue, pull request or discussion. Email Atlas support privately at `support@getatlasbase.com` and include:
 
 - the distribution version (`release.json`, or `GET /version` of the affected service);
 - the affected component (Portal, Tracking Gateway, edge, installer, operator tool) and endpoint;

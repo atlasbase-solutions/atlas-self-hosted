@@ -1,23 +1,23 @@
 {
   "product": "Atlas Self-Hosted",
-  "version": "1.2.0",
+  "version": "1.2.1",
   "edition": "self-hosted",
   "architecture": "linux/amd64",
-  "source_commit": "385b2a4845f7",
-  "built_at": "2026-10-27T16:46:44Z",
+  "source_commit": "c0f3bba446b5",
+  "built_at": "2026-10-31T12:24:11Z",
   "license_signing_key_ids": [
     "k1"
   ],
   "artifacts": {
-    "atlas-config-backfill": "84447b9b4522f621f5b9b443a8140bf03af4762b18bafc6d1ac95ffce5725368",
-    "atlas-gateway": "92b1d44a3f3d9facd1856f5c235511bc3b596fa9be10cf9123c9f9c9a7a2bcc5",
-    "atlas-migrate": "bccf2d461ecee292266be6436a06f388f6620dbe8a53482f679149883b9a6b2b",
-    "atlas-outbound-deliveries": "7b9556da48a4b9896d99df4347f886a5b552c25e1c49dbaa6568638d4b3d2bf1",
-    "atlas-payouts-quarantine": "562901e70591d2452308728efc9b0b490b5bf64ad04dca26e024d0aa3a83edac",
-    "atlas-portal": "c11b18273c8f7664a99a9891bf446555c6325694ae947f9bc66d6c7d25301b30",
-    "atlas-reset-owner-password": "ab810f1e5dc05a816fd92ade8ea99e288c43b86f81fd69eadf8cdb02440984e1",
-    "atlas-rotate-secrets": "faaf5f89f0ecf7bd7fd25148ddbbf38674a3cff0f1df43ae3c6cda45a42d9df9",
-    "atlas-setup-code": "e5600c5e5872c3e622bc7ff4486a190637ae215414353409d241da5f1a70e9a0",
-    "atlas-update-check": "bf99544632c77d3b3d181694f51f9384e935d972ab6b0bd2bc13c35202f2aec1"
+    "atlas-config-backfill": "e0521456dc95d25dca7b0b73fc3b34c47a5f16fd2ea0c86f79e5098854d1d089",
+    "atlas-gateway": "fdf053c6302a2ef7f5315d1cefdd684961101d8fd5372d7bd28e9bd1e419a682",
+    "atlas-migrate": "a91b39b0317c73738320290a90e3b00afa0876569e61b39a728fc4a9a54b474c",
+    "atlas-outbound-deliveries": "5e39dec709ca091b2d19518c25e60ad02596c481800d2bfa6e98be429fa7baae",
+    "atlas-payouts-quarantine": "bb846a2c5cae7afea169a0773172cb9a376732867bedc374ead15b5814b500e8",
+    "atlas-portal": "f1e5013d5ccbdedec096ebc2ee11e8a3f3aab5a01d986109dd190c3c0e0a7e92",
+    "atlas-reset-owner-password": "1a92de5d33fa35dcb0dbd784d90a31e135c8035bc87548bd30f14cae5429c4c0",
+    "atlas-rotate-secrets": "54d03ac7f3e49b5255c6075a5c3cddb10af495d3c4f5e69032edcaa450a99402",
+    "atlas-setup-code": "d10475036a1b178077fee5da6b7ef3a828a26b6c99691c522851f9170532512e",
+    "atlas-update-check": "131a6165f4a429de05a45e0b1f2330f378ac22fffc0a9c29b5316f7bf78f951e"
   }
 }

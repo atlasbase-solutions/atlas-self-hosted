@@ -1,58 +1,58 @@
 {
   "key_id": "",
   "product": "atlas-self-hosted",
-  "version": "1.2.0",
-  "published_at": "2026-10-27T16:46:44Z",
+  "version": "1.2.1",
+  "published_at": "2026-10-31T12:24:11Z",
   "artifacts": [
     {
       "name": "atlas-config-backfill",
-      "size": 10322080,
-      "sha256": "84447b9b4522f621f5b9b443a8140bf03af4762b18bafc6d1ac95ffce5725368"
+      "size": 10330272,
+      "sha256": "e0521456dc95d25dca7b0b73fc3b34c47a5f16fd2ea0c86f79e5098854d1d089"
     },
     {
       "name": "atlas-gateway",
-      "size": 48451744,
-      "sha256": "92b1d44a3f3d9facd1856f5c235511bc3b596fa9be10cf9123c9f9c9a7a2bcc5"
+      "size": 48472224,
+      "sha256": "fdf053c6302a2ef7f5315d1cefdd684961101d8fd5372d7bd28e9bd1e419a682"
     },
     {
       "name": "atlas-migrate",
-      "size": 11067552,
-      "sha256": "bccf2d461ecee292266be6436a06f388f6620dbe8a53482f679149883b9a6b2b"
+      "size": 11083936,
+      "sha256": "a91b39b0317c73738320290a90e3b00afa0876569e61b39a728fc4a9a54b474c"
     },
     {
       "name": "atlas-outbound-deliveries",
-      "size": 12161184,
-      "sha256": "7b9556da48a4b9896d99df4347f886a5b552c25e1c49dbaa6568638d4b3d2bf1"
+      "size": 12169376,
+      "sha256": "5e39dec709ca091b2d19518c25e60ad02596c481800d2bfa6e98be429fa7baae"
     },
     {
       "name": "atlas-payouts-quarantine",
-      "size": 15765664,
-      "sha256": "562901e70591d2452308728efc9b0b490b5bf64ad04dca26e024d0aa3a83edac"
+      "size": 15773856,
+      "sha256": "bb846a2c5cae7afea169a0773172cb9a376732867bedc374ead15b5814b500e8"
     },
     {
       "name": "atlas-portal",
-      "size": 33710240,
-      "sha256": "c11b18273c8f7664a99a9891bf446555c6325694ae947f9bc66d6c7d25301b30"
+      "size": 33726624,
+      "sha256": "f1e5013d5ccbdedec096ebc2ee11e8a3f3aab5a01d986109dd190c3c0e0a7e92"
     },
     {
       "name": "atlas-reset-owner-password",
-      "size": 10371232,
-      "sha256": "ab810f1e5dc05a816fd92ade8ea99e288c43b86f81fd69eadf8cdb02440984e1"
+      "size": 10379424,
+      "sha256": "1a92de5d33fa35dcb0dbd784d90a31e135c8035bc87548bd30f14cae5429c4c0"
     },
     {
       "name": "atlas-rotate-secrets",
-      "size": 10408096,
-      "sha256": "faaf5f89f0ecf7bd7fd25148ddbbf38674a3cff0f1df43ae3c6cda45a42d9df9"
+      "size": 10416288,
+      "sha256": "54d03ac7f3e49b5255c6075a5c3cddb10af495d3c4f5e69032edcaa450a99402"
     },
     {
       "name": "atlas-setup-code",
-      "size": 10293408,
-      "sha256": "e5600c5e5872c3e622bc7ff4486a190637ae215414353409d241da5f1a70e9a0"
+      "size": 10301600,
+      "sha256": "d10475036a1b178077fee5da6b7ef3a828a26b6c99691c522851f9170532512e"
     },
     {
       "name": "atlas-update-check",
-      "size": 6807712,
-      "sha256": "bf99544632c77d3b3d181694f51f9384e935d972ab6b0bd2bc13c35202f2aec1"
+      "size": 6824096,
+      "sha256": "131a6165f4a429de05a45e0b1f2330f378ac22fffc0a9c29b5316f7bf78f951e"
     }
   ],
   "files": [
@@ -73,8 +73,8 @@
     },
     {
       "path": "CHANGELOG.md",
-      "size": 44119,
-      "sha256": "e0d066b9561495d31af87d499a3240b6ec4ce5d98668bc38669440d63e8da569"
+      "size": 44409,
+      "sha256": "55a951cb6f9b0e3d06d6caade8e904b2090e62fa887d88db7300fdfbe2e98a6b"
     },
     {
       "path": "LICENSE.md",
@@ -88,28 +88,28 @@
     },
     {
       "path": "README.md",
-      "size": 79698,
-      "sha256": "fd45d6f96cd75ebad11ba162f4c5d8ebc15a68a919802ed197e6cb94d690dc61"
+      "size": 80714,
+      "sha256": "1f4008cf724357945218131a1ab9cc9f0b3fe9414daaf3d23da801b1a33d2343"
     },
     {
       "path": "SECURITY.md",
-      "size": 2366,
-      "sha256": "d22e43339a935d344fa43621d5de154f93215fc42b3c287ca0a3fdfb8544931c"
+      "size": 2348,
+      "sha256": "4727d66e01272b136081338efde37eea075c758f9b869b27b44dd140ac798d6f"
     },
     {
       "path": "SHA256SUMS",
       "size": 1078,
-      "sha256": "e7dd5dce96aeeb06c10f99a507eff1c10fa4294d8bb224956660af1502ee99b4"
+      "sha256": "ff67fca07a1907bbff80e01f1e86dd40c933f083510876872b4bfdb750e2057c"
     },
     {
       "path": "THIRD_PARTY_NOTICES.md",
       "size": 139707,
-      "sha256": "d8a7857d9fa3d93025e8a56c55fc567b42e7079ce746294dddc6fa507cf53184"
+      "sha256": "f01acf4d86f2fa5fd4208e3ebca395b0016a6341142726a6fb5c02cf0031f53a"
     },
     {
       "path": "UPGRADE.md",
-      "size": 25804,
-      "sha256": "87c875e91d97f6465fa8a414ebeebe32e2297d9f93689e66deaf8bf077739200"
+      "size": 25939,
+      "sha256": "9a0933a745467539c71883e5ecf1fa616c31709f4a51d9d161481ca17466f148"
     },
     {
       "path": "artifacts/frontend/assets/LicenseActivationPanel-CKCoHpCe.css",
@@ -248,53 +248,53 @@
     },
     {
       "path": "artifacts/linux-amd64/atlas-config-backfill",
-      "size": 10322080,
-      "sha256": "84447b9b4522f621f5b9b443a8140bf03af4762b18bafc6d1ac95ffce5725368"
+      "size": 10330272,
+      "sha256": "e0521456dc95d25dca7b0b73fc3b34c47a5f16fd2ea0c86f79e5098854d1d089"
     },
     {
       "path": "artifacts/linux-amd64/atlas-gateway",
-      "size": 48451744,
-      "sha256": "92b1d44a3f3d9facd1856f5c235511bc3b596fa9be10cf9123c9f9c9a7a2bcc5"
+      "size": 48472224,
+      "sha256": "fdf053c6302a2ef7f5315d1cefdd684961101d8fd5372d7bd28e9bd1e419a682"
     },
     {
       "path": "artifacts/linux-amd64/atlas-migrate",
-      "size": 11067552,
-      "sha256": "bccf2d461ecee292266be6436a06f388f6620dbe8a53482f679149883b9a6b2b"
+      "size": 11083936,
+      "sha256": "a91b39b0317c73738320290a90e3b00afa0876569e61b39a728fc4a9a54b474c"
     },
     {
       "path": "artifacts/linux-amd64/atlas-outbound-deliveries",
-      "size": 12161184,
-      "sha256": "7b9556da48a4b9896d99df4347f886a5b552c25e1c49dbaa6568638d4b3d2bf1"
+      "size": 12169376,
+      "sha256": "5e39dec709ca091b2d19518c25e60ad02596c481800d2bfa6e98be429fa7baae"
     },
     {
       "path": "artifacts/linux-amd64/atlas-payouts-quarantine",
-      "size": 15765664,
-      "sha256": "562901e70591d2452308728efc9b0b490b5bf64ad04dca26e024d0aa3a83edac"
+      "size": 15773856,
+      "sha256": "bb846a2c5cae7afea169a0773172cb9a376732867bedc374ead15b5814b500e8"
     },
     {
       "path": "artifacts/linux-amd64/atlas-portal",
-      "size": 33710240,
-      "sha256": "c11b18273c8f7664a99a9891bf446555c6325694ae947f9bc66d6c7d25301b30"
+      "size": 33726624,
+      "sha256": "f1e5013d5ccbdedec096ebc2ee11e8a3f3aab5a01d986109dd190c3c0e0a7e92"
     },
     {
       "path": "artifacts/linux-amd64/atlas-reset-owner-password",
-      "size": 10371232,
-      "sha256": "ab810f1e5dc05a816fd92ade8ea99e288c43b86f81fd69eadf8cdb02440984e1"
+      "size": 10379424,
+      "sha256": "1a92de5d33fa35dcb0dbd784d90a31e135c8035bc87548bd30f14cae5429c4c0"
     },
     {
       "path": "artifacts/linux-amd64/atlas-rotate-secrets",
-      "size": 10408096,
-      "sha256": "faaf5f89f0ecf7bd7fd25148ddbbf38674a3cff0f1df43ae3c6cda45a42d9df9"
+      "size": 10416288,
+      "sha256": "54d03ac7f3e49b5255c6075a5c3cddb10af495d3c4f5e69032edcaa450a99402"
     },
     {
       "path": "artifacts/linux-amd64/atlas-setup-code",
-      "size": 10293408,
-      "sha256": "e5600c5e5872c3e622bc7ff4486a190637ae215414353409d241da5f1a70e9a0"
+      "size": 10301600,
+      "sha256": "d10475036a1b178077fee5da6b7ef3a828a26b6c99691c522851f9170532512e"
     },
     {
       "path": "artifacts/linux-amd64/atlas-update-check",
-      "size": 6807712,
-      "sha256": "bf99544632c77d3b3d181694f51f9384e935d972ab6b0bd2bc13c35202f2aec1"
+      "size": 6824096,
+      "sha256": "131a6165f4a429de05a45e0b1f2330f378ac22fffc0a9c29b5316f7bf78f951e"
     },
     {
       "path": "assets/atlas-logo.svg",
@@ -344,7 +344,7 @@
     {
       "path": "docker-compose.yml",
       "size": 12259,
-      "sha256": "d77396a797c370cffc351a51d40c48751e2c9436e91356c1d18efceeda81187c"
+      "sha256": "2d76a2645b61df3ac54e276b1af516888ec51fe139c70dc9c414af55a69ba485"
     },
     {
       "path": "docs/backup-restore.md",
@@ -359,7 +359,7 @@
     {
       "path": "env/compose.env.example",
       "size": 972,
-      "sha256": "eca03c3f120f7f38774917a9d84b066e4090330b15fd17490e938086bd7f8241"
+      "sha256": "c0403bec01ff92bb39e56fee53b778f7861536a0456aa7147a3ee836797e7279"
     },
     {
       "path": "env/edge.env.example",
@@ -429,12 +429,12 @@
     {
       "path": "k8s/04-jobs.yaml",
       "size": 1315,
-      "sha256": "f8d5be05d0d3c4eb961ad300568a5c8dc5b2246b3f07dad35752f325b7657d7c"
+      "sha256": "476aecbe6c3dec334d35c211c1873afcfdbb8996bc668e0c47ad3c086177c711"
     },
     {
       "path": "k8s/05-apps.yaml",
       "size": 6560,
-      "sha256": "5a7fe3aa90c5879531bc6f3b5e1580330d9a57fac5c2df39e0b89c4760567338"
+      "sha256": "74aaacbbbce57642d83b21845262b1f40ae3769d79de4e71c9181e01b5702faf"
     },
     {
       "path": "k8s/06-ingress.yaml",
@@ -444,17 +444,17 @@
     {
       "path": "k8s/README.md",
       "size": 7022,
-      "sha256": "9eb3a9cffaf83edb6d1cd92156d9b6f50ac6664a09db1f2621a8282a63c490b1"
+      "sha256": "17b95afe372a2439251afd217b57b814bbb9a0a8f7e88bcb81defb7759d6771e"
     },
     {
       "path": "k8s/kustomization.yaml",
       "size": 546,
-      "sha256": "9ba894b112bf5dd2012df555270b7ca6938e0240da0614f8c62b684863912c7a"
+      "sha256": "a83d54170d9ebe284edbe835a158995b034585b37d5aede67cd93bca45509858"
     },
     {
       "path": "release.json",
       "size": 1207,
-      "sha256": "8bdcbbd77aee4ab17f30443c5924364ebc9810902d8cdcab8572b59aba592bc5"
+      "sha256": "4826fc4356b3fe1043a628bc419700b38cf64e767f8dff546f49c3200690ef94"
     },
     {
       "path": "scripts/check-config.sh",
