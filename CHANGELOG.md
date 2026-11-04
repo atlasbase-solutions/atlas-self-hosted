@@ -4,6 +4,14 @@ All notable changes to the Atlas Self-Hosted distribution are documented here, n
 
 Version 1.0.9 is the first public release of this repository. Its section lists every customer-facing change made since the 1.0.0 baseline, so that an installation made from an earlier private build can see everything it is about to receive.
 
+## 1.2.2 — 2026-11-04
+
+Changes since 1.2.1.
+
+### Features
+
+- An offer can now allow partner deep links: a partner adds `url=<page address>` to their short link and the visitor lands on that advertiser page instead of the offer landing, as long as the page is on one of the domains the offer allows. The offer's tracking parameters such as the click ID are carried into the page address, an address that does not fit never refuses the click and is explained in the click log, and reports gain a "Deep link page" breakdown; partners get a page field next to their link in the offer card and a `deep_link` field in the batch tracking-links API.
+
 ## 1.2.1 — 2026-10-31
 
 Changes since 1.2.0.

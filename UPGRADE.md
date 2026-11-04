@@ -6,6 +6,14 @@ A new installation needs none of this: follow "One-line installation" or "Quick 
 
 Since 1.0.0 every database schema change arrives as a new numbered migration, and each migration runner records the checksum of every file it applied. An installation of 1.0.0 or later is therefore upgraded in place, without recreating its databases. If the installed version is older than the oldest supported source version of the release you are installing, stop and contact Atlas support before changing binaries or images.
 
+## Upgrading to 1.2.2
+
+Supported source versions: 1.0.0 and later.
+
+Release-specific steps, in order:
+
+1. **migration** (1.2.2): Run the gateway migration step as part of the usual upgrade, before the new gateway starts: it adds two columns to the ClickHouse click table and two columns to the offers table of every tenant schema. The portal applies its own migration on start. No configuration changes are needed, and deep links stay off for every existing offer until someone turns them on.
+
 ## Upgrading to 1.2.1
 
 Supported source versions: 1.0.0 and later.
