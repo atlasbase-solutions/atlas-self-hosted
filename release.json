@@ -1,23 +1,23 @@
 {
   "product": "Atlas Self-Hosted",
-  "version": "1.2.2",
+  "version": "1.2.3",
   "edition": "self-hosted",
   "architecture": "linux/amd64",
-  "source_commit": "45072b577d7f",
-  "built_at": "2026-11-04T16:44:04Z",
+  "source_commit": "bd7b423fcfd8",
+  "built_at": "2026-11-10T04:59:52Z",
   "license_signing_key_ids": [
     "k1"
   ],
   "artifacts": {
     "atlas-config-backfill": "20f994017781972897a4d477903a8019fcd125e8ff173392e36709b94b3260de",
-    "atlas-gateway": "28a412480e7a5bb652ef52f8b1c3b73be56458283da8063104dd1b9464238dc1",
+    "atlas-gateway": "633cf5620e0be36bb3047891274eab78cf2f9ef98edf7f870d7b7ab19bb8c4fc",
     "atlas-migrate": "48067e17d54266d4c73763d511c36e63d819963740bf0bb2ec4488f9d8363e5f",
-    "atlas-outbound-deliveries": "75eba164f6c3a192223b7190a6cb2dcae4b7a8460e72c0d3eddfdc7d0717503b",
-    "atlas-payouts-quarantine": "9463e56a26c35139dc36fc6b23913a7ef6ca8c6b5e17d0001a8042aac73d6eb1",
-    "atlas-portal": "43591447e25804d8edb93b6e39c6c1faa1569a0cd7eaa05dbcce8d7a9b23af2b",
+    "atlas-outbound-deliveries": "ed99a62bc1eaeef13eccfd23bae433185dc93b7be1c09ba4a6387b79f58145c7",
+    "atlas-payouts-quarantine": "c349767371b522e5f9b501fe857bcd36add20e949963a59fd561015872012f10",
+    "atlas-portal": "48233ebbe6efcdbb436befd7d99a903fded1471ad829c1db4452e19f82b5c19f",
     "atlas-reset-owner-password": "5daf5d6044c230ec1f1a745e7776b8fe1b696c59a05f166f2481c40433e293a9",
     "atlas-rotate-secrets": "401ff65e7cb0fbb3d51170bfee18f2e874ff0c66e589442c4c21cbfff783d2c7",
     "atlas-setup-code": "683eb405f34bc7b38234d3af0aa6bd32b5de6085a2e412730492f11bba033e6b",
-    "atlas-update-check": "131a6165f4a429de05a45e0b1f2330f378ac22fffc0a9c29b5316f7bf78f951e"
+    "atlas-update-check": "aae3d3d1dff7c47297f9d67b4a856be8fde2006279d45872bb839743df084bbe"
   }
 }

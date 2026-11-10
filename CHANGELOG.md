@@ -4,6 +4,14 @@ All notable changes to the Atlas Self-Hosted distribution are documented here, n
 
 Version 1.0.9 is the first public release of this repository. Its section lists every customer-facing change made since the 1.0.0 baseline, so that an installation made from an earlier private build can see everything it is about to receive.
 
+## 1.2.3 — 2026-11-10
+
+Changes since 1.2.2.
+
+### Features
+
+- The License section now has an Updates block: it shows the installed version, the latest released version with its publication date and when this was last checked, and, when a newer version exists, links to its changelog and upgrade notes and gives the server administrator a ready `atlas-update-check -download` command. The portal asks Atlas only when the network owner clicks "Check now" (at most once every 10 minutes); it never checks on its own and never installs anything. `atlas-update-check` now also finds a license installed from the portal, so the command works without copying the license into the environment.
+
 ## 1.2.2 — 2026-11-04
 
 Changes since 1.2.1.
