@@ -327,7 +327,7 @@ The two PostgreSQL databases have different owners:
 
 ClickHouse stores high-volume event analytics and is not the only copy of any critical business state. Redis holds operational state for the hot path. Kafka decouples intake, analytics, configuration, payouts and outbound delivery, so each can recover independently.
 
-The edge is Caddy. It serves the web application, routes each host to its service, publishes an explicit route list rather than everything a service serves, and in `direct` mode obtains and renews TLS certificates itself.
+The edge is Caddy. It serves the web application, routes each host to its service, publishes an explicit route list rather than everything a service serves, and in `direct` mode obtains and renews TLS certificates itself; in `manual` mode it serves only the certificates you provide.
 
 ## System requirements
 
@@ -337,7 +337,7 @@ The edge is Caddy. It serves the web application, routes each host to its servic
 - 4 vCPU, 8 GB RAM, 100 GB of persistent storage;
 - Docker Engine with the Compose v2 plugin, in a release that still receives security updates (the installer installs the current one);
 - two DNS names — portal and tracking — pointing at the server, plus an optional third one for postbacks;
-- in `direct` mode, ports 80 and 443 reachable from the internet; in `proxy` mode, your own TLS reverse proxy or load balancer.
+- in `direct` and `manual` modes, ports 80 and 443 reachable from the internet; in `proxy` mode, your own TLS reverse proxy or load balancer.
 
 ### Throughput
 
@@ -404,12 +404,12 @@ curl -fsSL https://raw.githubusercontent.com/atlasbase-solutions/atlas-self-host
 
 The installer asks no questions. It:
 
-1. checks the server (a smaller one gets a warning, not a refusal; in `direct` mode ports 80 and 443 must be free, and the installer names the program that holds a busy one);
+1. checks the server (a smaller one gets a warning, not a refusal; in `direct` and `manual` modes ports 80 and 443 must be free, and the installer names the program that holds a busy one);
 2. installs Docker Engine and the Docker Compose plugin from Docker's official apt repository when they are not already available — it changes nothing else on the host;
 3. downloads this distribution, verifies every binary against `SHA256SUMS` and every file of the distribution against the release index signed with the Atlas release key, and refuses to continue if the distribution is not signed by Atlas or any file is changed, missing or not listed in the index;
 4. creates `/opt/atlas`, generates independent random database and encryption secrets and writes the service env files (readable by root only);
 5. builds the images, starts the Compose stack and checks it from inside the server;
-6. registers a one-time **setup code**, waits up to two minutes for an HTTPS certificate on the server's public address (Let's Encrypt issues one for the address itself) and saves the wizard link `https://<server IP>/setup#code=...` to `/root/atlas-setup.txt` (readable by root only). When the certificate is not issued in time — usually ports 80/443 closed at the provider, or no public address on the server — the link is `http://` and the wizard shows the reason. The link is also printed when you run the command in a terminal, and the login message reminds you about it until setup is complete.
+6. registers a one-time **setup code**, waits up to two minutes for an HTTPS certificate on the server's public address (Let's Encrypt issues one for the address itself) and saves the wizard link `https://<server IP>/setup#code=...` to `/root/atlas-setup.txt` (readable by root only). When the certificate is not issued in time — usually ports 80/443 closed at the provider, or no public address on the server — the link is `http://` and the wizard shows the reason. In `manual` mode nothing is issued, so the installer does not wait: the link is `http://<server IP>/setup#code=...`, or `https://<portal domain>/setup#code=...` when the domains are set by configuration and `--tls-dir` brought a certificate for the portal domain. The link is also printed when you run the command in a terminal, and the login message reminds you about it until setup is complete.
 
 Transient failures — a package mirror, GitHub or an image registry dropping the connection, a fresh server still busy with its own package updates, a service slow on its first start — are waited for and retried. **Interrupted, or a step did not complete? Run the same command again.** It continues the installation in `/opt/atlas`: starts the stack, checks it and prints a fresh wizard link. It never downloads over, regenerates or deletes anything of an existing installation. When a service does not become healthy, the installer prints the state of every service and the recent log of each failing one.
 
@@ -445,8 +445,9 @@ All optional, passed as environment variables (`curl ... | sudo VAR=value sh`):
 | `ATLAS_INSTALL_DIR` | `/opt/atlas` | installation directory; an Atlas installation already there is continued, never overwritten, and any other existing directory is refused |
 | `ATLAS_REPOSITORY` | this repository | an approved HTTPS mirror |
 | `ATLAS_SOURCE_DIR` | — | an already downloaded distribution directory, for a server without GitHub access; verified the same way |
-| `ATLAS_EDGE_MODE` | `direct` | `proxy` to run behind your own TLS load balancer (see [Edge modes](#edge-modes)) |
+| `ATLAS_EDGE_MODE` | `direct` | `manual` to serve only certificates you provide, `proxy` to run behind your own TLS load balancer (see [Edge modes](#edge-modes)) |
 | `ATLAS_HTTP_PORT` | `8080` | edge port in `proxy` mode |
+| `ATLAS_TLS_DIR` | — | a directory of `<host>.crt` + `<host>.key` pairs copied into `config/tls/` (`direct` and `manual` modes); also given as `curl ... \| sudo sh -s -- --tls-dir /root/certs` |
 | `ATLAS_SETUP_CODE` | generated | a setup code generated outside (provider template): 24 letters and digits |
 | `ATLAS_PUBLIC_IPS` | detected | public addresses of the server, shown in the wizard's DNS table and used in the link |
 | `ATLAS_PORTAL_DOMAIN`, `ATLAS_TRACKING_DOMAIN` | — | both or neither: domains set by configuration; the wizard shows them read-only |
@@ -539,7 +540,7 @@ Atlas deliberately does not use one monolithic env file.
 
 | Example file | Consumed by | Purpose |
 |---|---|---|
-| `env/compose.env.example` | Docker Compose CLI | Release tag, edge mode (`direct`/`proxy`, shared with the portal) and the published edge ports |
+| `env/compose.env.example` | Docker Compose CLI | Release tag, edge mode (`direct`/`manual`/`proxy`, shared with the portal) and the published edge ports |
 | `env/edge.env.example` | `edge` | Optional host names that win over the wizard, and the subnet of an external TLS proxy allowed to report client addresses |
 | `env/portal.env.example` | `portal` | Portal runtime, optional owner bootstrap, limits, secrets, license, analytics and Kafka connections |
 | `env/gateway.env.example` | `gateway`, `gateway-migrate` | Tracking runtime, data connections, windows, limits, encryption, license and enrichment paths |
@@ -603,7 +604,7 @@ The `config-quarantine` Kafka topic keeps configuration events the Gateway could
 
 ```sh
 docker compose --env-file env/compose.env run --rm \
-  --entrypoint atlas-update-check portal -installed 1.2.3
+  --entrypoint atlas-update-check portal -installed 1.3.0
 ```
 
 The same check is available to the network owner in Settings → License (**Check now**), which also shows a ready download command. The tool presents the installation's license to Atlas — `ATLAS_LICENSE_TOKEN`, the license installed from the portal or the offline file, in that order — verifies the signed answer and reports the current release. Atlas answers only a valid license; otherwise the tool shows the license status. To download the release, mount an operator-owned writable directory and add `-download /downloads/<version>` (a new or empty directory): the tool fetches the `vX.Y.Z` archive of this repository from GitHub, unpacks it and keeps it only if every file matches the Atlas release signature. It installs and restarts nothing; read `UPGRADE.md` before replacing a running installation. An isolated installation can download the release on another machine and check the copied directory with `atlas-update-check -verify`.
@@ -623,9 +624,19 @@ Keeping click and postback hosts apart means a click domain that lands on an ad-
 `ATLAS_EDGE_MODE` in `env/compose.env` selects how the edge faces the internet; the same value reaches the portal.
 
 - **`direct`** (default) — a server of its own. The edge listens on `80` and `443`, obtains and renews certificates for the portal, tracking and postback names itself (ACME: HTTP-01 on port 80, TLS-ALPN on 443) and keeps them in the `edge-data` volume. Plain HTTP on a known name redirects to HTTPS, except certificate-authority checks; the portal name sends HSTS. Until a portal domain is declared, the edge also serves the server's public addresses (`ATLAS_PUBLIC_IPS`) over HTTPS with a short-lived Let's Encrypt certificate for the address, falling back to a certificate of its own authority when the public one cannot be issued (the browser then warns); after setup without domains that address is the portal. Once the portal domain is declared, the address redirects to it, and an unknown name gets `404`. The outcome of the latest certificate attempt for every name goes to `acme.json` in the `edge-status` volume, which the portal reads (read-only) to show why a certificate is missing. There is no proxy in front, so the edge takes the client address from the connection and discards any `X-Forwarded-*` a client sends. Both ports must be reachable from the internet, and a CAA record, if you have one, must allow Let's Encrypt.
+- **`manual`** — the same server of its own and the same ports, routes and redirects as `direct`, but the edge never obtains or renews a certificate and never contacts a certificate authority: no ACME, no certificate authority of its own, no OCSP requests. A name is served over HTTPS only with its own certificate (see below); a name without one fails the TLS handshake, while plain HTTP on it still redirects to HTTPS. Certificate-authority checks on port 80 get `404`. The server's public addresses are plain HTTP only: the setup wizard while setup is open, then a redirect to the portal domain — so declare a portal domain and give it a certificate. Use it where a policy forbids automatic issuance or the server has no outbound access; renewing certificates before they expire is then your job.
 - **`proxy`** — your TLS load balancer or reverse proxy terminates TLS and forwards plain HTTP to `ATLAS_HTTP_PORT`. Set `ATLAS_HTTP_PORT=8080` (or any free port), `ATLAS_HTTPS_BIND=127.0.0.1`, an empty `ATLAS_HTTPS_PORT`, and name the proxy network in `ATLAS_EDGE_TRUSTED_PROXY_CIDR` (see below).
 
-Host names come from the first-run wizard: the portal writes them to `installation.json` in the `atlas-installation` volume and the edge picks up a change within 5 seconds, without a restart. `ATLAS_PORTAL_HOST`, `ATLAS_TRACKING_HOST` and `ATLAS_POSTBACK_HOST` in `env/edge.env`, when set, win over the wizard. Until setup is completed, the edge serves the setup wizard on plain HTTP for any name or IP, and over HTTPS on the server's public addresses. A new configuration that cannot be applied is logged and the previous one keeps serving; `docker compose --env-file env/compose.env exec edge atlas-edge-render` prints the configuration the edge would use now. `make test-edge` checks the edge's route contract in both modes on throwaway containers, without touching a running installation.
+#### Your own certificate
+
+In `direct` and `manual` modes a host can be served with a certificate you already have — a corporate wildcard, an OV/EV certificate, or one from a private certificate authority for an internal portal — instead of the one the edge obtains itself. There are two ways, and the second wins over the first:
+
+- **In the portal**, Settings → Domains → Own certificates: the network owner pastes or uploads the chain and the unencrypted private key. The portal checks the pair, shows which declared hosts it covers and asks to confirm a replacement, an expiry within 30 days, a private certificate authority (allowed for the portal host only) or a certificate that covers the portal host. It stores the private key encrypted with `PORTAL_SECRET_KEY` and writes the certificate for the edge to the `edge-certs` volume (`PORTAL_EDGE_CERTS_DIR`). The edge serves it within seconds. In `direct` mode, a day before it expires the edge stops serving it on its own and the host returns to a certificate the edge obtains; the owner is warned 30 and 7 days ahead. In `manual` mode it is served until it expires and the host is then left without HTTPS, so the portal warns earlier and more often; it can also create a certificate request (CSR) for the declared names — the private key is generated and kept by the portal, and only the issued certificate is uploaded back. A certificate is served for every name it covers, so a wildcard uploaded for tracking hosts also serves the portal host under it.
+- **In the server configuration**: put `config/tls/<host>.crt` and `config/tls/<host>.key` (see `config/tls/README.md`). These files win over the portal and over the edge's own certificate; the installer copies such pairs for you with `--tls-dir`; Settings → Domains shows the host as set by the server configuration and refuses an upload over it. This is also the way back when a wrong certificate was uploaded for the portal host and the portal cannot be opened.
+
+There is no automatic renewal of your own certificate: upload the next one before the warning turns critical. A certificate revoked by its authority is not detected; upload a new one. In `proxy` mode certificates live on your balancer, and the portal does not offer an upload.
+
+Host names come from the first-run wizard: the portal writes them to `installation.json` in the `atlas-installation` volume and the edge picks up a change within 5 seconds, without a restart. `ATLAS_PORTAL_HOST`, `ATLAS_TRACKING_HOST` and `ATLAS_POSTBACK_HOST` in `env/edge.env`, when set, win over the wizard. Until setup is completed, the edge serves the setup wizard on plain HTTP for any name or IP, and in `direct` mode also over HTTPS on the server's public addresses. A new configuration that cannot be applied is logged and the previous one keeps serving; `docker compose --env-file env/compose.env exec edge atlas-edge-render` prints the configuration the edge would use now. `make test-edge` checks the edge's route contract in all three modes on throwaway containers, without touching a running installation.
 
 ### Recommended network path (`proxy` mode)
 
@@ -643,13 +654,13 @@ TLS load balancer / reverse proxy
 
 ### Firewall policy
 
-- Inbound: TCP 80 and 443 to the Atlas host in `direct` mode; in `proxy` mode, TCP 443 to your TLS endpoint and `ATLAS_HTTP_PORT` from that endpoint only.
+- Inbound: TCP 80 and 443 to the Atlas host in `direct` and `manual` modes; in `proxy` mode, TCP 443 to your TLS endpoint and `ATLAS_HTTP_PORT` from that endpoint only.
 - Never expose PostgreSQL 5432, ClickHouse 8123/9000, Redis 6379, Kafka 19092 or the Gateway metrics port 9108 publicly. The Compose stack publishes none of them.
 - Restrict SSH and Docker access to your operations network.
 - Outbound from Portal and Gateway: HTTPS (TCP 443) to Atlas for the license check and the update check, unless the installation runs in isolated mode with an offline license file. If your firewall allows only named hosts, ask your Atlas contact for the list.
 - Outbound from the Portal: HTTPS to `antifraud.getatlasbase.com` for reputation data, once a day (the optional anti-fraud quality statistics go there too); your SMTP relay when email is configured; `webrisk.googleapis.com:443` when the domain reputation check is turned on in Settings (off by default).
 - Outbound from the Gateway: the receivers of your outbound postbacks.
-- Outbound from the edge in `direct` mode: the ACME certificate authorities (Let's Encrypt, with ZeroSSL as Caddy's fallback).
+- Outbound from the edge in `direct` mode: the ACME certificate authorities (Let's Encrypt, with ZeroSSL as Caddy's fallback). In `manual` and `proxy` modes the edge makes no outbound connections.
 
 ### What the edge publishes
 
@@ -670,7 +681,7 @@ Name the proxy's subnet in `ATLAS_EDGE_TRUSTED_PROXY_CIDR` (`env/edge.env`) and 
 
 ### DNS and certificates
 
-Create A/AAAA records for the portal, tracking and (optional) postback names; the wizard and Settings → Domains show them and check each one. In `direct` mode the edge issues the certificates itself, and the portal shows the reason when the certificate authority refuses (closed port 80, a DNS record pointing elsewhere, a rate limit, a CAA record); in `proxy` mode issue them on your proxy.
+Create A/AAAA records for the portal, tracking and (optional) postback names; the wizard and Settings → Domains show them and check each one. In `direct` mode the edge issues the certificates itself, and the portal shows the reason when the certificate authority refuses (closed port 80, a DNS record pointing elsewhere, a rate limit, a CAA record); in `manual` mode provide them yourself (see [Your own certificate](#your-own-certificate)); in `proxy` mode issue them on your proxy.
 
 The Network Owner declares and changes the domains in Settings → Domains: every new name is checked to lead to this server before it is saved. When a change removes an address that placed links may use, or no longer matches the license, the screen says so before saving; keep the old tracking name as an additional one so links already handed out keep working. With a license, the new domains must be covered by it — request a reissued license first. Domains set by configuration are read-only there.
 
@@ -756,7 +767,7 @@ The portal and gateway images carry the command-line tools that the procedures i
 
 | Tool | Image | What it is for |
 |---|---|---|
-| `atlas-setup-code` | portal | Issue the one-time code that opens the first-run wizard while the installation has no users (`set` registers a code from standard input). Only a hash is stored; a new code replaces the previous one |
+| `atlas-setup-code` | portal | Issue the one-time code that opens the first-run wizard while the installation has no users (`set` registers a code from standard input; `requests` only lists open certificate requests with their public key SHA-256, without issuing a code). Only a hash is stored; a new code replaces the previous one |
 | `atlas-config-backfill` | portal | Republish the network's configuration into the `config-changes` topic after the topic was lost or recreated |
 | `atlas-payouts-quarantine` | portal | Inspect and replay a quarantined payout-ledger message; the ledger stops closing periods rather than close an incomplete one |
 | `atlas-rotate-secrets` | portal | Re-encrypt the secrets stored at rest after an encryption key is replaced |
@@ -773,7 +784,7 @@ $COMPOSE run --rm --entrypoint atlas-payouts-quarantine portal
 $COMPOSE run --rm --entrypoint atlas-outbound-deliveries gateway
 ```
 
-On a server set up by the one-line installer, `sudo atlas-setup-code` does the first of these and also prints the wizard link.
+On a server set up by the one-line installer, `sudo atlas-setup-code` does the first of these and also prints the wizard link; `sudo atlas-setup-code requests` lists the open certificate requests to compare their public key SHA-256 with the wizard (manual TLS mode), and the wizard's link stays valid.
 
 ### Rotating an encryption key
 
@@ -809,7 +820,7 @@ Back up every stateful component:
 4. Redis persistence.
 5. Kafka data, or a documented rebuild strategy.
 6. Portal promo files (`portal-files`).
-7. The `atlas-license` volume (it holds the license; treat it as a secret) and, in `direct` mode, `edge-data` (certificates). The `edge-status` volume needs no backup: the edge rewrites it with every certificate attempt.
+7. The `atlas-license` volume (it holds the license; treat it as a secret) and, in `direct` mode, `edge-data` (certificates). The `edge-status` volume needs no backup: the edge rewrites it with every certificate attempt. Nor does `edge-certs`: the portal rebuilds it from its database; the certificates you uploaded are kept there, with the private keys encrypted. Back up `config/tls/` with the env files if you use it — it holds private keys in plain text.
 8. The working env files or Kubernetes Secrets, encrypted separately.
 9. The release version, `SHA256SUMS` and the domain configuration.
 

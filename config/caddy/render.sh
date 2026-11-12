@@ -8,7 +8,7 @@
 #   docker compose exec edge atlas-edge-render
 #
 # Inputs:
-#   ATLAS_EDGE_MODE                direct (default) or proxy
+#   ATLAS_EDGE_MODE                direct (default), manual or proxy
 #   ATLAS_INSTALLATION_FILE        the portal's projection, read-only here
 #   ATLAS_PORTAL_HOST              wins over portal_domain from the file
 #   ATLAS_TRACKING_HOST            wins over tracking_domains (comma/space list)
@@ -16,7 +16,30 @@
 #   ATLAS_EDGE_TRUSTED_PROXY_CIDR  proxy mode: the balancer allowed to report
 #                                  the client address and scheme
 #   ATLAS_EDGE_ACME_CA             test stands only: "internal" (Caddy's own CA)
-#                                  or the directory URL of another ACME CA
+#                                  or the directory URL of another ACME CA;
+#                                  refused in manual mode
+#   ATLAS_EDGE_CERTS_DIR           the portal's own-certificate volume:
+#                                  manifest.json and <fingerprint>.crt|.key,
+#                                  read-only here (default /var/lib/atlas/edge-certs)
+#   ATLAS_EDGE_OPERATOR_TLS_DIR    certificates set by the operator, mounted
+#                                  from config/tls/ (default /etc/atlas/tls)
+#
+# Own certificates (direct and manual modes). A declared host is served with:
+#   1. config/tls/<host>.crt and <host>.key when both files exist -- the
+#      server configuration wins over the portal;
+#   2. otherwise the certificate the network owner uploaded in the portal, when
+#      the manifest lists the host and its serve_until has not passed yet --
+#      the portal sets serve_until a day before expiry in direct mode and at
+#      expiry in manual mode; the edge only honours it;
+#   3. otherwise, in direct mode, a certificate the edge obtains itself; in
+#      manual mode no certificate at all: HTTPS on that host fails the
+#      handshake, plain HTTP still redirects to it.
+# A manifest that is not schema 1, names a file that is not there, or lists a
+# host twice is refused as a whole, never applied in part.
+#
+# manual mode: TLS is terminated here, but nothing obtains or renews a
+# certificate -- no ACME, no Caddy's own CA, no OCSP requests. Only the
+# certificates above are served; the server's own addresses are plain HTTP.
 #
 # public_ips from installation.json (direct mode): while no portal domain is
 # declared, the server is also served over HTTPS on these addresses, with a
@@ -40,9 +63,18 @@ fail() {
 }
 
 case $mode in
-    direct|proxy) ;;
-    *) fail "ATLAS_EDGE_MODE must be direct or proxy, got '$mode'" ;;
+    direct|manual|proxy) ;;
+    *) fail "ATLAS_EDGE_MODE must be direct, manual or proxy, got '$mode'" ;;
 esac
+# tls is "edge" when this edge terminates TLS itself (direct and manual), and
+# "balancer" when a proxy in front does.
+tls=edge
+[ "$mode" != proxy ] || tls=balancer
+# manual mode promises that no certificate authority is ever asked: an ACME
+# directory there is a contradiction, not a setting to ignore.
+if [ "$mode" = manual ] && [ -n "$acme_ca" ]; then
+    fail "ATLAS_EDGE_ACME_CA must be empty in manual mode: the edge obtains no certificates"
+fi
 
 # --- Hosts: environment first, then the portal's projection ------------------
 
@@ -106,6 +138,83 @@ for ip in $ips; do
     esac
 done
 
+# --- Own certificates ---------------------------------------------------------
+
+certs_dir=${ATLAS_EDGE_CERTS_DIR:-/var/lib/atlas/edge-certs}
+operator_dir=${ATLAS_EDGE_OPERATOR_TLS_DIR:-/etc/atlas/tls}
+# Both directories go into the configuration verbatim.
+for d in "$certs_dir" "$operator_dir"; do
+    case $d in
+        /*) ;;
+        *) fail "'$d' is not an absolute directory" ;;
+    esac
+    case $d in
+        *[!A-Za-z0-9/._-]*) fail "'$d' contains characters a Caddyfile path cannot hold" ;;
+    esac
+done
+
+# own lists "<host> <certificate file> <key file>", one host per line.
+own=
+own_has() {
+    printf '%s' "$own" | awk -v h="$1" '$1 == h { found = 1 } END { exit !found }'
+}
+# A balancer in front holds its own certificates; this edge reads none.
+if [ "$tls" = edge ]; then
+    for h in $all; do
+        if [ -f "$operator_dir/$h.crt" ] && [ -f "$operator_dir/$h.key" ]; then
+            # The files keep their names when the operator renews them, so
+            # their hash goes into the configuration: new contents are a new
+            # configuration, and the edge reloads it.
+            sum=$(cat "$operator_dir/$h.crt" "$operator_dir/$h.key" | sha256sum | cut -c1-16)
+            own="$own$h $operator_dir/$h.crt $operator_dir/$h.key operator:$sum
+"
+        fi
+    done
+    manifest=$certs_dir/manifest.json
+    if [ -e "$manifest" ]; then
+        jq -e '.schema == 1 and (.certificates | type == "array")' "$manifest" >/dev/null 2>&1 \
+            || fail "$manifest is unreadable or not schema 1"
+        # Fractions of a second are cut: fromdateiso8601 does not read them.
+        entries=$(jq -r '.certificates[]
+            | select((.serve_until | sub("\\.[0-9]+"; "") | fromdateiso8601) > now)
+            | [.fingerprint, .cert_file, .key_file, (.hosts | join(" "))] | @tsv' "$manifest") \
+            || fail "cannot read certificates from $manifest"
+        tab=$(printf '\t')
+        listed=" "
+        while IFS="$tab" read -r fp crt key hosts; do
+            [ -n "$fp" ] || continue
+            printf '%s' "$fp" | grep -Eq '^[0-9a-f]{64}$' || fail "'$fp' in $manifest is not a certificate fingerprint"
+            [ "$crt" = "$fp.crt" ] && [ "$key" = "$fp.key" ] || fail "files of $fp in $manifest are not named after its fingerprint"
+            [ -r "$certs_dir/$crt" ] && [ -r "$certs_dir/$key" ] || fail "files of $fp are missing in $certs_dir"
+            for h in $hosts; do
+                case $h in
+                    ''|.*|-*|*.|*..*|*[!a-z0-9.-]*) fail "'$h' in $manifest is not a DNS host name" ;;
+                esac
+                case $listed in
+                    *" $h "*) fail "$h is listed by two certificates in $manifest" ;;
+                esac
+                listed="$listed$h "
+                # Only declared hosts have sites; another name is not served.
+                case " $all " in
+                    *" $h "*) ;;
+                    *) continue ;;
+                esac
+                # The operator's files win over the portal.
+                own_has "$h" && continue
+                own="$own$h $certs_dir/$crt $certs_dir/$key portal:$fp
+"
+            done
+        done <<EOF_ENTRIES
+$entries
+EOF_ENTRIES
+    fi
+fi
+
+# own_tls prints the tls directive of a host that has its own certificate.
+own_tls() {
+    printf '%s' "$own" | awk -v h="$1" '$1 == h { printf "\t# own certificate, %s\n\ttls %s %s\n", $4, $2, $3 }'
+}
+
 # site_addr prints an address as a Caddyfile host: IPv6 goes in brackets.
 site_addr() {
     case $1 in
@@ -123,6 +232,9 @@ if [ "$setup_open" = true ] || [ -z "$portal$tracking$postback$ips" ]; then
     setup=true
 fi
 
+# manual mode asks no certificate authority, so an ACME account email has no
+# use there and is not written into the configuration.
+[ "$mode" != manual ] || acme_email=
 if [ -n "$acme_email" ]; then
     printf '%s' "$acme_email" | grep -Eq '^[^][:space:]{}"\\@]+@[^][:space:]{}"\\@]+$' \
         || fail "acme_email in $file is not a plain email address"
@@ -136,7 +248,9 @@ case $acme_ca in
 esac
 # HTTPS on the server's own address: direct mode, addresses known, no portal
 # domain yet. With a portal domain the addresses only redirect to it, and the
-# IP certificate is no longer renewed.
+# IP certificate is no longer renewed. Never in manual mode: a certificate for
+# an address can be neither uploaded (an own certificate names DNS names) nor
+# issued (nothing issues), so the address stays plain HTTP.
 ip_site=false
 if [ "$mode" = direct ] && [ -z "$portal" ] && [ -n "$ips" ]; then
     ip_site=true
@@ -167,6 +281,8 @@ printf '\tadmin localhost:2019\n'
 printf '\tpersist_config off\n'
 printf '\thttp_port 80\n'
 printf '\thttps_port 443\n'
+# Global TLS options follow the mode: direct obtains certificates itself,
+# manual only serves the ones it is given, proxy leaves TLS to the balancer.
 if [ "$mode" = direct ]; then
     # Redirects are written explicitly below: during setup the wizard's
     # reachability check must get an answer over plain HTTP, not a redirect.
@@ -189,6 +305,17 @@ if [ "$mode" = direct ]; then
         set -- $ips
         printf '\tdefault_sni %s\n' "$1"
     fi
+elif [ "$mode" = manual ]; then
+    # No certificate management at all: no ACME, no Caddy's own CA, and no
+    # automatic HTTP->HTTPS redirects (they are written explicitly below).
+    # Sites with a DNS name are still HTTPS sites -- auto_https off does not
+    # turn them into HTTP -- so a site without a tls directive has no
+    # certificate and its handshake fails; Caddy 2.11 keeps :443 a TLS
+    # listener even when no site has a certificate at all (plain HTTP sent to
+    # it gets a 400). OCSP stapling is off as well: it would make the edge
+    # contact the certificate authority's responder.
+    printf '\tauto_https off\n'
+    printf '\tocsp_stapling off\n'
 else
     printf '\tauto_https off\n'
     # Only the named balancer may report the client address and scheme; the
@@ -292,13 +419,16 @@ EOF
 
 # Site blocks for the known hosts. In direct mode the name gets a certificate
 # and HTTPS; plain HTTP only redirects (the ACME HTTP-01 challenge is answered
-# by Caddy before any route). In proxy mode the balancer terminates TLS and the
-# routes are served over HTTP.
+# by Caddy before any route). In manual mode the same HTTPS site carries the
+# own certificate when there is one, and has none otherwise. In proxy mode the
+# balancer terminates TLS and the routes are served over HTTP.
 emit_site() {
     role=$1
     host=$2
-    if [ "$mode" = direct ]; then
+    # Whoever terminates TLS decides between an HTTPS site and a plain one.
+    if [ "$tls" = edge ]; then
         printf '%s {\n\timport common\n' "$host"
+        own_tls "$host"
         # The portal lives on HTTPS only; HSTS removes the first plain request
         # that could carry the session cookie.
         [ "$role" != portal ] || printf '\theader Strict-Transport-Security "max-age=31536000"\n'
@@ -314,9 +444,13 @@ for h in $tracking; do
 done
 [ -z "$postback" ] || emit_site postback "$postback"
 
-if [ "$mode" = direct ] && [ -n "$all" ]; then
+# Plain HTTP of the known names redirects to HTTPS -- in manual mode too, with
+# or without a certificate, so that HTTP behaves the same whatever the state of
+# the certificate. Nothing answers ACME challenges there in manual mode.
+if [ "$tls" = edge ] && [ -n "$all" ]; then
     # shellcheck disable=SC2086
     printf '%s {\n\timport common\n\timport setup_label\n' "$(site_list http:// $all)"
+    [ "$mode" != manual ] || printf '\thandle /.well-known/acme-challenge/* {\n\t\trespond 404\n\t}\n'
     printf '\thandle {\n\t\tredir https://{host}{uri} 308\n\t}\n}\n\n'
 fi
 
@@ -356,8 +490,10 @@ fi
 # Plain HTTP on the server's own address once setup is over: the portal lives
 # on HTTPS only. Without a portal domain that is HTTPS on the same address;
 # with one, the portal domain. During setup plain HTTP stays the wizard below:
-# its first steps run before any certificate exists.
-if [ "$mode" = direct ] && [ "$setup" = false ] && [ -n "$ips" ]; then
+# its first steps run before any certificate exists. In manual mode only the
+# redirect to the portal domain exists: the address has no HTTPS of its own,
+# and without a portal domain it falls to the catch-all below (404).
+if [ "$setup" = false ] && [ -n "$ips" ] && { [ "$mode" = direct ] || { [ "$mode" = manual ] && [ -n "$portal" ]; }; }; then
     for ip in $ips; do
         if [ -n "$portal" ]; then
             target="https://$portal"
@@ -371,21 +507,26 @@ fi
 # HTTPS for a name this edge does not serve. Without a certificate for it the
 # handshake fails anyway; this block answers the one remaining case, a known
 # name in SNI with a different Host header, which Caddy would otherwise answer
-# with an empty 200.
-if [ "$mode" = direct ]; then
+# with an empty 200. Needed whenever this edge terminates TLS.
+if [ "$tls" = edge ]; then
     printf 'https:// {\n\timport common\n\trespond 404\n}\n\n'
 fi
 
 # Everything else on plain HTTP: IP addresses and unknown names. During setup
 # it is the wizard; afterwards only the reachability label, the rest is 404.
 printf 'http:// {\n\timport common\n'
-if [ "$mode" = direct ]; then
+# Without a balancer the health check is internal; behind one the
+# orchestrator probes it from outside.
+if [ "$tls" = edge ]; then
     # The container health check asks from inside; nobody else needs it.
     printf '\t@edge_health {\n\t\tpath /edge-health\n\t\tremote_ip 127.0.0.1/8 ::1\n\t}\n'
 else
     printf '\t@edge_health path /edge-health\n'
 fi
 printf '\thandle @edge_health {\n\t\trespond "ok" 200\n\t}\n'
+# manual mode answers no ACME challenge, on any name: a clean 404 instead of
+# the wizard's index.html.
+[ "$mode" != manual ] || printf '\thandle /.well-known/acme-challenge/* {\n\t\trespond 404\n\t}\n'
 if [ "$setup" = true ]; then
     printf '\timport setup_label\n'
     printf '\thandle /api/setup/* {\n\t\timport to_portal\n\t}\n'

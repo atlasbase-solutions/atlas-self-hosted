@@ -27,8 +27,14 @@ set -eu
 #   ATLAS_SOURCE_DIR       an already downloaded distribution directory (hosts
 #                          without GitHub access); verified the same way
 #   ATLAS_EDGE_MODE        direct (default: ports 80/443, certificates issued by
-#                          Atlas) or proxy (plain HTTP behind your TLS proxy)
+#                          Atlas), manual (ports 80/443, only certificates you
+#                          provide, nothing is issued or renewed automatically)
+#                          or proxy (plain HTTP behind your TLS proxy)
 #   ATLAS_HTTP_PORT        edge HTTP port in proxy mode, default 8080
+#   ATLAS_TLS_DIR          a directory of <host>.crt + <host>.key pairs (PEM,
+#                          key without a passphrase) copied into config/tls/;
+#                          direct and manual modes. Same as --tls-dir DIR:
+#                            curl ... | sudo sh -s -- --tls-dir /root/certs
 #   ATLAS_SETUP_CODE       setup code generated outside (a provider template)
 #   ATLAS_PUBLIC_IPS       public addresses of this server, comma-separated;
 #                          detected from the network interfaces when unset
@@ -51,6 +57,8 @@ install_dir=${ATLAS_INSTALL_DIR:-/opt/atlas}
 source_override=${ATLAS_SOURCE_DIR:-}
 edge_mode=${ATLAS_EDGE_MODE:-direct}
 proxy_http_port=${ATLAS_HTTP_PORT:-8080}
+tls_dir=${ATLAS_TLS_DIR:-}
+tls_hosts=
 setup_code=${ATLAS_SETUP_CODE:-}
 public_ips=${ATLAS_PUBLIC_IPS:-}
 portal_domain=$(printf '%s' "${ATLAS_PORTAL_DOMAIN:-}" | tr '[:upper:]' '[:lower:]')
@@ -436,6 +444,7 @@ configure_installation() {
     run_root chown -R root:root "$install_dir"
     run_root chmod 0750 "$install_dir" "$install_dir/env"
     run_root chmod 0600 "$install_dir"/env/*.env
+    install_tls_files
 }
 
 # show_diagnostics prints the state of the stack and the recent log of every
@@ -547,8 +556,17 @@ validate_settings() {
     esac
     # The edge mode decides the published ports; anything else is a typo.
     case "$edge_mode" in
-        direct|proxy) ;;
-        *) fail "ATLAS_EDGE_MODE must be direct or proxy, got '$edge_mode'" ;;
+        direct|manual|proxy) ;;
+        *) fail "ATLAS_EDGE_MODE must be direct, manual or proxy, got '$edge_mode'" ;;
+    esac
+    # Behind a TLS proxy the edge holds no certificates, so a directory of
+    # them would be silently ignored.
+    if [ -n "$tls_dir" ] && [ "$edge_mode" = proxy ]; then
+        fail 'ATLAS_TLS_DIR (--tls-dir) has no use in proxy mode: your TLS proxy holds the certificates'
+    fi
+    # The directory is walked file by file, so its path must be one word.
+    case "$tls_dir" in
+        *[[:space:]]*) fail 'ATLAS_TLS_DIR (--tls-dir) must not contain spaces' ;;
     esac
     # A proxy-mode port is a plain TCP port number.
     case "$proxy_http_port" in
@@ -573,6 +591,59 @@ validate_settings() {
         setup_code=$(normalize_code "$setup_code")
         printf '%s\n' "$setup_code" | grep -Eq '^[0-9A-Z]{24}$' || fail 'ATLAS_SETUP_CODE must be 24 letters and digits (dashes and spaces are ignored)'
     fi
+}
+
+# validate_tls_dir checks the certificate directory given with --tls-dir
+# before anything on the server changes, and lists its hosts in tls_hosts. It
+# runs as root, because such a directory is usually readable by root only.
+validate_tls_dir() {
+    # Without a directory there is nothing to copy.
+    [ -n "$tls_dir" ] || return 0
+    run_root test -d "$tls_dir" || fail "ATLAS_TLS_DIR $tls_dir is not a directory"
+    for file in $(run_root find "$tls_dir" -maxdepth 1 -type f \( -name '*.crt' -o -name '*.key' \) </dev/null | sort); do
+        name=$(basename "$file")
+        host=${name%.*}
+        valid_domain "$host" || fail "$file: the file name must be a host name, as in portal.example.com.crt"
+        # Each host needs both halves; a lone half would serve nothing.
+        case $name in
+            *.crt)
+                run_root test -f "$tls_dir/$host.key" || fail "$file has no $host.key next to it"
+                run_root grep -q -- '-----BEGIN CERTIFICATE-----' "$file" || fail "$file is not a PEM certificate"
+                tls_hosts="$tls_hosts $host"
+                ;;
+            *)
+                run_root test -f "$tls_dir/$host.crt" || fail "$file has no $host.crt next to it"
+                run_root grep -q -- 'PRIVATE KEY-----' "$file" || fail "$file is not a PEM private key"
+                # A key with a passphrase cannot be loaded without a person.
+                if run_root grep -q -- 'ENCRYPTED' "$file"; then
+                    fail "$file is protected by a passphrase; the edge needs the key without one"
+                fi
+                ;;
+        esac
+    done
+    [ -n "$tls_hosts" ] || fail "ATLAS_TLS_DIR $tls_dir holds no <host>.crt and <host>.key pair"
+}
+
+# install_tls_files copies the pairs from --tls-dir into config/tls/ of the
+# installation: certificates readable, private keys for root only. The edge
+# picks them up within seconds, also after the start.
+install_tls_files() {
+    # Nothing was given: config/tls/ stays as shipped.
+    [ -n "$tls_hosts" ] || return 0
+    run_root install -d -m 0755 "$install_dir/config/tls"
+    for host in $tls_hosts; do
+        run_root install -m 0644 -o root -g root "$tls_dir/$host.crt" "$install_dir/config/tls/$host.crt"
+        run_root install -m 0600 -o root -g root "$tls_dir/$host.key" "$install_dir/config/tls/$host.key"
+    done
+    info "Certificates copied to $install_dir/config/tls/:$tls_hosts"
+}
+
+# portal_has_tls_file succeeds when the operator gave a certificate for the
+# portal domain declared by configuration: the wizard can then open on it
+# over HTTPS.
+portal_has_tls_file() {
+    [ -n "$portal_domain" ] && run_root test -f "$install_dir/config/tls/$portal_domain.crt" &&
+        run_root test -f "$install_dir/config/tls/$portal_domain.key"
 }
 
 # detect_existing_installation decides between a new installation and
@@ -613,8 +684,9 @@ load_existing_settings() {
 
 # check_ports makes sure the edge can take its ports before anything is installed.
 check_ports() {
-    # In direct mode the edge needs the host's ports 80 and 443 for itself.
-    if [ "$edge_mode" = direct ]; then
+    # In direct and manual modes the edge needs the host's ports 80 and 443
+    # for itself.
+    if [ "$edge_mode" != proxy ]; then
         for port in 80 443; do
             holder=$(port_holder "$port")
             # A listener already there would make the edge fail to start.
@@ -640,21 +712,39 @@ write_host_tool() {
 #!/bin/sh
 # Issues a new one-time setup code for the Atlas first-run wizard, replacing the
 # previous one, and prints the wizard link. Written by the Atlas installer.
+# 'atlas-setup-code requests' only lists the open certificate requests with
+# their public key SHA-256, to compare with the wizard; the code stays valid.
 set -eu
+dc() { docker compose --env-file '$install_dir/env/compose.env' -f '$install_dir/docker-compose.yml' "\$@"; }
+if [ "\${1:-}" = requests ]; then
+    dc exec -T portal atlas-setup-code requests </dev/null
+    exit
+fi
+if [ \$# -gt 0 ]; then
+    echo 'usage: atlas-setup-code [requests]' >&2
+    exit 1
+fi
 err=\$(mktemp)
 trap 'rm -f "\$err"' EXIT
-code=\$(docker compose --env-file '$install_dir/env/compose.env' -f '$install_dir/docker-compose.yml' exec -T portal atlas-setup-code </dev/null 2>"\$err" | tr -d '\\r' | tail -n 1 | sed 's/.*code=//; s/ .*//')
+code=\$(dc exec -T portal atlas-setup-code </dev/null 2>"\$err" | tr -d '\\r' | tail -n 1 | sed 's/.*code=//; s/ .*//')
 # The portal's own messages are shown only when it did not issue a code.
 if [ -z "\$code" ]; then
     cat "\$err" >&2
     exit 1
 fi
-scheme=http
+# Open certificate requests (manual TLS mode) are listed for comparison.
+tr -d '\\r' <"\$err" | grep -E '^(open certificate requests|  #[0-9])' >&2 || true
+base='http://$link_host$port_suffix'
 # Over HTTPS once the address has a trusted certificate (direct mode only).
 if [ '$edge_mode' = direct ] && [ '$behind_nat' = 0 ] && curl -fsS -m 10 --connect-to '$link_host:443:127.0.0.1:443' 'https://$link_host/api/setup/status' </dev/null >/dev/null 2>&1; then
-    scheme=https
+    base='https://$link_host$port_suffix'
 fi
-link="\$scheme://$link_host$port_suffix/setup#code=\$code"
+# Manual mode has no HTTPS on the address; with the operator's certificate for
+# the portal domain the wizard opens there over HTTPS.
+if [ '$edge_mode' = manual ] && [ -n '$portal_domain' ] && [ -f '$install_dir/config/tls/$portal_domain.crt' ] && [ -f '$install_dir/config/tls/$portal_domain.key' ]; then
+    base='https://$portal_domain'
+fi
+link="\$base/setup#code=\$code"
 umask 077
 printf 'Atlas first-run wizard: %s\n' "\$link" >'$setup_file'
 printf '%s\n' "\$link"
@@ -675,9 +765,31 @@ EOF
     fi
 }
 
+# parse_args reads the command-line options; each has an environment variable
+# of the same meaning, which an option given here overrides.
+parse_args() {
+    while [ $# -gt 0 ]; do
+        # Only the documented options exist; anything else is a typo.
+        case $1 in
+            --tls-dir)
+                [ $# -ge 2 ] || fail '--tls-dir needs a directory'
+                tls_dir=$2
+                shift 2
+                ;;
+            --tls-dir=*)
+                tls_dir=${1#--tls-dir=}
+                shift
+                ;;
+            *) fail "unknown option '$1'; the installer takes --tls-dir DIR, everything else is set by environment variables (see the top of this script)" ;;
+        esac
+    done
+}
+
 main() {
     trap cleanup EXIT
     trap 'exit 130' HUP INT TERM
+
+    parse_args "$@"
 
     # --- 1. Checks ---------------------------------------------------------------
 
@@ -691,6 +803,7 @@ main() {
         sudo_cmd=sudo
         run_root true </dev/null || fail 'sudo did not grant root; run the command with sudo'
     fi
+    validate_tls_dir
 
     detect_existing_installation
 
@@ -699,8 +812,8 @@ main() {
         load_existing_settings
         printf '%s\n' 'Atlas Self-Hosted installation' "Continuing the existing installation in $install_dir; edge mode: $edge_mode"
         # Settings that only a new installation applies are reported, not silently dropped.
-        if [ -n "${ATLAS_PORTAL_DOMAIN:-}${ATLAS_OWNER_EMAIL:-}${ATLAS_EDGE_MODE:-}${ATLAS_SOURCE_DIR:-}" ]; then
-            warn 'domains, owner, edge mode and source settings apply only to a new installation; the existing configuration is kept'
+        if [ -n "${ATLAS_PORTAL_DOMAIN:-}${ATLAS_OWNER_EMAIL:-}${ATLAS_EDGE_MODE:-}${ATLAS_SOURCE_DIR:-}$tls_dir" ]; then
+            warn 'domains, owner, edge mode, certificate directory and source settings apply only to a new installation; the existing configuration is kept'
         fi
     else
         check_resources
@@ -744,7 +857,7 @@ main() {
     fi
 
     http_port=80
-    [ "$edge_mode" = direct ] || http_port=$proxy_http_port
+    [ "$edge_mode" != proxy ] || http_port=$proxy_http_port
 
     link_host=$(printf '%s' "$public_ips" | cut -d, -f1)
     behind_nat=0
@@ -810,13 +923,21 @@ main() {
         fi
     fi
 
+    # Manual mode never has HTTPS on the address and never waits for a
+    # certificate; with the operator's certificate for the portal domain the
+    # wizard opens there over HTTPS.
+    link_base="$link_scheme://$link_host$port_suffix"
+    if [ "$edge_mode" = manual ] && portal_has_tls_file; then
+        link_base="https://$portal_domain"
+    fi
+
     # --- 9. Result -----------------------------------------------------------------
 
     if [ -z "$owner_email" ] && [ "$setup_completed" -eq 0 ]; then
         write_motd
         # The link is saved only when there is a code to put in it.
         if [ -n "$display_code" ]; then
-            link="$link_scheme://$link_host$port_suffix/setup#code=$display_code"
+            link="$link_base/setup#code=$display_code"
             printf 'Atlas first-run wizard: %s\n' "$link" | install_root_file 0600 "$setup_file"
         fi
 
@@ -842,6 +963,9 @@ main() {
             if [ "$link_scheme" = http ] && [ "$behind_nat" -eq 0 ]; then
                 printf 'The HTTPS certificate for this address is not issued yet; the wizard opens over HTTP and shows why (usually ports 80/443 closed at the provider). Domains can be added later, in Settings -> Domains.\n'
             fi
+        elif [ "$edge_mode" = manual ]; then
+            printf 'Manual TLS mode: nothing issues or renews certificates. Keep ports 80 and 443 open: the wizard checks your domains on port 80.\n'
+            printf 'A domain is served over HTTPS only with its own certificate: request or upload it in the wizard or in Settings -> Domains, or put <host>.crt and <host>.key into %s/config/tls/.\n' "$install_dir"
         else
             printf 'Proxy mode: point your TLS proxy at port %s of this server.\n' "$proxy_http_port"
         fi

@@ -1,7 +1,8 @@
 # The edge: Caddy serving the portal SPA and routing the portal, tracking and
 # postback hosts. In `direct` mode it obtains and renews TLS certificates
-# itself; in `proxy` mode it serves plain HTTP behind your TLS balancer. See the
-# "Edge" section of README.md.
+# itself; in `manual` mode it serves only the certificates it is given and
+# obtains none; in `proxy` mode it serves plain HTTP behind your TLS balancer.
+# See the "Edge" section of README.md.
 FROM caddy:2.11.4-alpine
 
 # jq reads installation.json, the portal's projection of the installation's
@@ -18,7 +19,7 @@ COPY artifacts/frontend /srv/spa
 # authorities limit how often that may happen.
 VOLUME ["/data"]
 
-# 80 serves plain HTTP in both modes; 443 serves HTTPS in `direct` mode.
+# 80 serves plain HTTP in every mode; 443 serves HTTPS in `direct` and `manual`.
 EXPOSE 80 443
 
 ENTRYPOINT ["/usr/local/bin/atlas-edge"]

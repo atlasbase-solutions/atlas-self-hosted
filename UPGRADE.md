@@ -6,6 +6,19 @@ A new installation needs none of this: follow "One-line installation" or "Quick 
 
 Since 1.0.0 every database schema change arrives as a new numbered migration, and each migration runner records the checksum of every file it applied. An installation of 1.0.0 or later is therefore upgraded in place, without recreating its databases. If the installed version is older than the oldest supported source version of the release you are installing, stop and contact Atlas support before changing binaries or images.
 
+## Upgrading to 1.3.0
+
+Supported source versions: 1.0.0 and later.
+
+Release-specific steps, in order:
+
+1. **manual** (1.3.0): 1. Only if you keep a modified copy of `docker-compose.yml`: add the `edge-certs` volume and the one-shot `edge-certs-volume-init` service exactly as in the distribution file; mount the volume read-write at `/var/lib/atlas/edge-certs` in the `portal` service and read-only (`:ro`) at the same path in the `edge` service, and mount `./config/tls` read-only at `/etc/atlas/tls` in the `edge` service.
+   2. Add `PORTAL_EDGE_CERTS_DIR=/var/lib/atlas/edge-certs` to `env/portal.env`. Without it the upload is turned off and every host keeps the edge's own certificate.
+2. **migration** (1.3.0): 1. The portal applies control-plane migration `0004` on startup. It adds an empty table of the networks' own certificates; existing rows are not rewritten.
+   2. Own certificates need `PORTAL_SECRET_KEY` and the shared edge certificate volume (`PORTAL_EDGE_CERTS_DIR`). Until both are configured the section explains that the feature is unavailable, and every domain keeps its automatic certificate.
+3. **migration** (1.3.0): 1. The portal applies control-plane migration `0005` on startup. It adds an empty table of certificate signing requests; existing rows are not rewritten.
+   2. `atlas-rotate-secrets` now also re-encrypts the keys of open requests; run it as before after changing `PORTAL_SECRET_KEY`.
+
 ## Upgrading to 1.2.3
 
 Supported source versions: 1.0.0 and later.

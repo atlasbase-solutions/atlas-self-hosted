@@ -1,0 +1,1 @@
+import{o as e}from"./api-TblaQI_1.js";async function t(){if(window.location.pathname!==`/setup`)try{(await e.probe()).setup_open&&window.location.replace(`/setup${window.location.hash}`)}catch{}}export{t as redirectIfSetupOpen};

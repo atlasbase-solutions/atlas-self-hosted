@@ -103,6 +103,10 @@ check_edge_mode() {
     value=$(sed -n 's/^ATLAS_EDGE_MODE=//p' "$file" | tail -n 1 | tr -d '"'"'"' \r')
     case ${value:-direct} in
         direct) return 0 ;;
+        manual)
+            warn_manual_hosts
+            return 0
+            ;;
         proxy)
             https_port=$(sed -n 's/^ATLAS_HTTPS_PORT=//p' "$file" | tail -n 1 | tr -d '"'"'"' \r')
             https_bind=$(sed -n 's/^ATLAS_HTTPS_BIND=//p' "$file" | tail -n 1 | tr -d '"'"'"' \r')
@@ -115,8 +119,34 @@ check_edge_mode() {
             return 0
             ;;
     esac
-    printf 'ATLAS_EDGE_MODE in env/compose.env must be direct or proxy, got %s\n' "$value" >&2
+    printf 'ATLAS_EDGE_MODE in env/compose.env must be direct, manual or proxy, got %s\n' "$value" >&2
     return 1
+}
+
+# warn_manual_hosts tells the operator what manual mode means for the domains:
+# the edge obtains no certificates, so a domain without one of its own is not
+# served over HTTPS. A warning, not an error: certificates can be added after
+# the start, in the portal or in config/tls/. When the edge is running, the
+# domains that would be left without HTTPS are named -- also before switching
+# an installation from direct to manual.
+warn_manual_hosts() {
+    printf '%s\n' 'ATLAS_EDGE_MODE=manual: the edge obtains no certificates. A domain without its own certificate (uploaded in Settings -> Domains, or config/tls/<host>.crt and .key) is not served over HTTPS.' >&2
+    compose="docker compose --env-file $repo_dir/env/compose.env -f $repo_dir/docker-compose.yml"
+    # Only a running edge knows the domains declared in the portal.
+    if ! $compose ps -q --status running edge </dev/null 2>/dev/null | grep -q .; then
+        return 0
+    fi
+    # The configuration the edge would serve in manual mode: every HTTPS site
+    # without a tls directive is a domain left without HTTPS.
+    missing=$($compose exec -T -e ATLAS_EDGE_MODE=manual -e ATLAS_EDGE_ACME_CA= edge atlas-edge-render </dev/null 2>/dev/null |
+        awk '/^[a-z0-9][a-z0-9.-]* \{$/ { host = $1; tls = 0; next }
+             host != "" && /^\ttls / { tls = 1 }
+             host != "" && /^}$/ { if (!tls) printf "%s ", host; host = "" }') || return 0
+    # Every declared domain already has a certificate: nothing to name.
+    if [ -n "$missing" ]; then
+        printf 'Without HTTPS in manual mode right now: %s\n' "$missing" >&2
+    fi
+    return 0
 }
 
 key_problem=0

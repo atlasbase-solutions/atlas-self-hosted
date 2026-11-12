@@ -4,6 +4,17 @@ All notable changes to the Atlas Self-Hosted distribution are documented here, n
 
 Version 1.0.9 is the first public release of this repository. Its section lists every customer-facing change made since the 1.0.0 baseline, so that an installation made from an earlier private build can see everything it is about to receive.
 
+## 1.3.0 — 2026-11-12
+
+Changes since 1.2.3.
+
+### Features
+
+- In `direct` mode the bundled edge serves the certificates the network owner uploads in Settings → Domains, and the operator can set a certificate for a host with `config/tls/<host>.crt` and `<host>.key`, which wins over the portal. The edge picks up a change within seconds without a restart and returns a host to its own certificate a day before an uploaded one expires.
+- The network owner can now install the network's own TLS certificate for its domains in Settings → Domains instead of the automatically issued one. The portal checks the certificate, its chain and private key before anything changes, shows which domains it will cover and asks to confirm a replacement, a soon expiry or a private certificate authority. The edge serves the certificate within seconds, a day before it expires the domains return to the automatic certificate, and the owner is warned 30 and 7 days ahead. The private key is stored encrypted and is never shown again.
+- Issuing a certificate no longer means handling a private key: in Settings → Domains the network owner chooses the names and the key type, the portal generates the key and a certificate signing request (CSR) to send to any certificate authority, and the issued certificate is uploaded alone — the portal matches it to its request by the public key, and the key never leaves the server. «Reissue» on a certificate prepares a request with the same names and key type, a request that gets no certificate within 30 days destroys its key, and every page of the portal shows the owner a banner when a certificate expires within two weeks.
+- New edge mode `ATLAS_EDGE_MODE=manual` for installations that must use only their own certificates: the edge never requests a certificate from any authority, every portal, tracking and postback domain is served with the certificate installed for it in Settings → Domains (or by the operator in `config/tls/`), and a certificate is served until the moment it expires. A private certificate authority is accepted on any domain after confirmation; a domain without a certificate does not open over HTTPS, and the portal says so on every page. The first-run wizard issues the certificate signing request for the portal domain itself, so the private key never travels over plain HTTP, and `atlas-setup-code requests` prints the public key fingerprints of open requests to compare with the wizard without replacing the setup code.
+
 ## 1.2.3 — 2026-11-10
 
 Changes since 1.2.2.
