@@ -6,6 +6,20 @@ A new installation needs none of this: follow "One-line installation" or "Quick 
 
 Since 1.0.0 every database schema change arrives as a new numbered migration, and each migration runner records the checksum of every file it applied. An installation of 1.0.0 or later is therefore upgraded in place, without recreating its databases. If the installed version is older than the oldest supported source version of the release you are installing, stop and contact Atlas support before changing binaries or images.
 
+## Upgrading to 1.3.1
+
+Supported source versions: 1.0.0 and later.
+
+Release-specific steps, in order:
+
+1. **manual** (1.3.1): 1. Licenses in the previous format are no longer accepted. Before upgrading, ask Atlas support for a reissued license in the new format; the license ID, term and domains stay the same.
+   2. Upgrade, then install the reissued license the same way you installed the current one: in Settings → License, or by replacing `ATLAS_LICENSE_TOKEN` / the offline license file and restarting the portal and the gateway.
+   3. If the installation runs on the old license after the upgrade, it is treated as having no license: the portal switches to restricted mode and the gateway stops accepting traffic until the new license is installed.
+2. **migration** (1.3.1): 1. Apply the portal migrations `0028_two_factor.sql` (network schema) and `0006_login_challenges.sql` (shared schema); the portal applies its chains at startup. They create empty tables and change no existing rows; nobody is asked for a second factor until they turn it on or the owner makes it mandatory.
+   2. The authenticator secret is encrypted with `PORTAL_SECRET_KEY`. Without it the portal does not offer two-factor authentication and the owner cannot make it mandatory. When rotating the key, run the secret rotation command as before: it now also re-encrypts the authenticator secrets.
+   3. One-time codes depend on the server clock. Keep the portal host synchronised with NTP; a clock that drifts by more than about a minute rejects valid codes.
+   4. If the network owner loses both the password and the authenticator, run `atlas-reset-owner-password` with the new `-reset-2fa` flag to remove the owner's second factor together with the password reset.
+
 ## Upgrading to 1.3.0
 
 Supported source versions: 1.0.0 and later.
