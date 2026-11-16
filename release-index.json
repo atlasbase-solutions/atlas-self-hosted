@@ -1,18 +1,18 @@
 {
   "key_id": "",
   "product": "atlas",
-  "version": "1.3.1",
-  "published_at": "2026-11-15T11:36:07Z",
+  "version": "1.3.2",
+  "published_at": "2026-11-16T17:12:56Z",
   "artifacts": [
     {
       "name": "atlas-config-backfill",
       "size": 10330272,
-      "sha256": "9a8abf77ecc0350e7dd6ff1c3eb5fad660c3d263d0f1105a29651ae0e37f0b51"
+      "sha256": "7c4958bdc399b4bfce512083220cc6f5a2033a4e12b486d4b731925d6e1d5bd3"
     },
     {
       "name": "atlas-gateway",
       "size": 48742560,
-      "sha256": "840061fa29d72b5c1e90ad88245eca283d436d5717385f95181e6aa9228d4610"
+      "sha256": "8cd4f24e13fe3e106959d6149c04161b5158663f1d69c4a51ad54d22e57beca6"
     },
     {
       "name": "atlas-migrate",
@@ -27,27 +27,27 @@
     {
       "name": "atlas-payouts-quarantine",
       "size": 15790240,
-      "sha256": "f83a76b35b18eac288008c526882db2244ac8361434447ce2c77335a24615609"
+      "sha256": "5bbd6fdf2d1a42e97831e5df43067681ef946b60fc3b9cba274b3990fc6e9198"
     },
     {
       "name": "atlas-portal",
       "size": 34250912,
-      "sha256": "97ff57453d1da29133a40d8e404407260e1d442e3e665a4d4eddb0e1c68e3ee9"
+      "sha256": "8d9417234d535824d661631a03557b851089ac007b701be94bee3f37b65a8405"
     },
     {
       "name": "atlas-reset-owner-password",
       "size": 10387616,
-      "sha256": "219bf7e0b1b0a8e1e38067fb80f59926f7a58fc5e836af4efda8532671c2e22b"
+      "sha256": "2142b76e564d27a04b704037e2f150fe0d663ad167087429d52386abc24bb255"
     },
     {
       "name": "atlas-rotate-secrets",
       "size": 10436768,
-      "sha256": "b85ee4462ca61126c0c483e9c4530f55d11004d21db56bab3a7b443fccdb3336"
+      "sha256": "93d2a971de4e372dcb66af1fe98044665d662ce3e5aeb8684be749e904360582"
     },
     {
       "name": "atlas-setup-code",
       "size": 10322080,
-      "sha256": "dbda5f00eca601f4b90ba95b00c0fa56e3de3deade890ec162e956d49cd664bf"
+      "sha256": "e460796d81b4f0a6552d6b768cdb393341dc031e245a8da36f5f8730bc74a160"
     },
     {
       "name": "atlas-update-check",
@@ -73,8 +73,8 @@
     },
     {
       "path": "CHANGELOG.md",
-      "size": 49437,
-      "sha256": "a01d781af92f7c0c2bc95fc5f13f33ae70701e5b0cad4c8158a67c8d27368044"
+      "size": 50311,
+      "sha256": "d7d6920e7b60a248d6652f87652f09b52730aabf299b85eba8da4097efa91d12"
     },
     {
       "path": "LICENSE.md",
@@ -89,7 +89,7 @@
     {
       "path": "README.md",
       "size": 85419,
-      "sha256": "e64b033e2176a0112caf53d2607838dedef57f4faa3f799afc96b0530e30708e"
+      "sha256": "1fc1b96cbacf09970dc324ed25b24a37e76b830c95898cebb6cef97f6f2093b5"
     },
     {
       "path": "SECURITY.md",
@@ -99,17 +99,22 @@
     {
       "path": "SHA256SUMS",
       "size": 1078,
-      "sha256": "f0d092d0481471b12bb7580771f45730194cfd77a57f6432a9c559d4de7da09f"
+      "sha256": "8865337d3eeb1969b62d108ba50f978ecb2f24bdd619129149b5a2f3a0cf76af"
     },
     {
       "path": "THIRD_PARTY_NOTICES.md",
-      "size": 140882,
-      "sha256": "59b53a4e87fe7db2cd5b69fd230f91c8dda6474965611a51963e0e3a09583c70"
+      "size": 150069,
+      "sha256": "2e1a79ea327ddea8ac878a38f048f0d21feba641d3581544ec649009aee4bcc8"
     },
     {
       "path": "UPGRADE.md",
-      "size": 29746,
-      "sha256": "abaccb0983ab7af30f474110b70f5cd6e6991c1266983f609d4d0c8c760d8cac"
+      "size": 29881,
+      "sha256": "73e6345b73d44219ebbb56e42327de8a7149f8e1c600440a04caee2050329c39"
+    },
+    {
+      "path": "artifacts/frontend/assets/LicenseActivationPanel-BCU_4-dR.js",
+      "size": 3280454,
+      "sha256": "5c8d7e821cf4dbbb587b8acf67497098278a4f54703521fd52f5ea6f343eef51"
     },
     {
       "path": "artifacts/frontend/assets/LicenseActivationPanel-BkQ5LYEn.css",
@@ -117,14 +122,9 @@
       "sha256": "d394dd5f4f750c1dd6158ce7d64efc9a4cab4964ac9bfc01b941f3a70c929b07"
     },
     {
-      "path": "artifacts/frontend/assets/LicenseActivationPanel-k55ykwOY.js",
-      "size": 3316731,
-      "sha256": "20b6d0585eb67b1be0f346fdbc9ef626336ed12b3d61f191af5885e7ca9b76b8"
-    },
-    {
-      "path": "artifacts/frontend/assets/SetupWizard-DeSL6-G7.js",
+      "path": "artifacts/frontend/assets/SetupWizard-DbVkePXw.js",
       "size": 21129,
-      "sha256": "19c553cab323f5dad64581786e1c0f2a340b192f5758bad6f75fb609bacefecd"
+      "sha256": "fb6af9c1158f22816f623839cf84317ef0ef0127de89867e6b6400a9b8d9730c"
     },
     {
       "path": "artifacts/frontend/assets/api-BeFKgL2l.js",
@@ -147,84 +147,384 @@
       "sha256": "dba5cb9dbfddb3c8fdb7b6301639615aae9d8a074d688158f24c15aee2f4a5dd"
     },
     {
-      "path": "artifacts/frontend/assets/fonts/1e8edb2fc100b7f7.woff2",
-      "size": 18748,
-      "sha256": "71d5ee93cc1e9f1d520a3a8b66456de18c7879d8df09d57fcd2eaff75fef0075"
+      "path": "artifacts/frontend/assets/index-B5CmcDT2.js",
+      "size": 1474229,
+      "sha256": "c6ee637d322480e02d1e8b925a76d418702d14243c8258b0d9604fda2d39844d"
     },
     {
-      "path": "artifacts/frontend/assets/fonts/4c2d4a14f23a8ed5.woff2",
-      "size": 10252,
-      "sha256": "5c66f9e07e90c6d4ac4922cc68d60de26c17b1858e677fb5e603fce3952b3ff2"
+      "path": "artifacts/frontend/assets/index-EMPSCtwY.css",
+      "size": 341360,
+      "sha256": "d9e6d797d62489050ca19e2cebcb5a767de7351fc79c8a08038f52e602dc4335"
     },
     {
-      "path": "artifacts/frontend/assets/fonts/6b5e37b52d26eeac.woff2",
-      "size": 1640,
-      "sha256": "62213be8a78b42f1e29d1452d91e2f8b3e745572a9dd98d3941e39fa00b37d76"
+      "path": "artifacts/frontend/assets/inter-cyrillic-400-normal-HOLc17fK.woff",
+      "size": 9780,
+      "sha256": "6e441a6c94788318fa02b6d0a633aa29eebe27b69c6567eb1e59b4edc68ed70e"
     },
     {
-      "path": "artifacts/frontend/assets/fonts/6d0a674525fee3dd.woff2",
-      "size": 11232,
-      "sha256": "6e9e020a25f9b56d418f2c085b1d3c09725a4da23fe693a5b463064606732190"
+      "path": "artifacts/frontend/assets/inter-cyrillic-400-normal-obahsSVq.woff2",
+      "size": 7712,
+      "sha256": "f0bb586459ce8f09b238285040f17e3e9e9538b2c5a7aae0775194e33c36c3c3"
     },
     {
-      "path": "artifacts/frontend/assets/fonts/95b9ea830580b57e.woff2",
-      "size": 25960,
-      "sha256": "ca157063339ac4ad418f214f3abfed119b0798ab4d377386ce5c9e5a7a435ebd"
+      "path": "artifacts/frontend/assets/inter-cyrillic-500-normal-BasfLYem.woff2",
+      "size": 7900,
+      "sha256": "b77a86ec16aadc157f4a99e8898d71cd75ea264753d9bdf13f962f8c3988cbb0"
     },
     {
-      "path": "artifacts/frontend/assets/fonts/99e400330f36ae77.woff2",
-      "size": 6836,
-      "sha256": "0a557721b1f8b36d3f3f84442689a71ca4a744300abcb46a1953f51bfc663b66"
+      "path": "artifacts/frontend/assets/inter-cyrillic-500-normal-CxZf_p3X.woff",
+      "size": 9940,
+      "sha256": "5be18e0345781cb882a267798518553c0e915174fc70731ab5f085ca64ba1ebc"
     },
     {
-      "path": "artifacts/frontend/assets/fonts/a9d11b3ffe7aa537.woff2",
-      "size": 85068,
-      "sha256": "34b9c504cab7a73e37b746343a449132e56cf7b5481af2cb81dc74dcff25c956"
+      "path": "artifacts/frontend/assets/inter-cyrillic-600-normal-4D_pXhcN.woff",
+      "size": 9936,
+      "sha256": "cc190ed1b64eb650a4ad7e97c7a668cb8b34acd9c4c7f7bf4372c0cbacd35795"
     },
     {
-      "path": "artifacts/frontend/assets/fonts/b19c2080652a3c2b.woff2",
-      "size": 11624,
-      "sha256": "db5ff4db83e580426280e9337a58dc57d3a83784a1b03ad80914651594441d52"
+      "path": "artifacts/frontend/assets/inter-cyrillic-600-normal-CWCymEST.woff2",
+      "size": 7972,
+      "sha256": "6c2a37f82a676bcd441b735e4e2cda4edb8873a059ab9c362a84f0711f257041"
     },
     {
-      "path": "artifacts/frontend/assets/fonts/c4064400db3750ce.woff2",
-      "size": 5888,
-      "sha256": "c89b9cc0bc6262bd4f8d8494b6961601f3aefa829d08c2e3635f4d501d3a47c2"
+      "path": "artifacts/frontend/assets/inter-cyrillic-700-normal-CjBOestx.woff2",
+      "size": 7904,
+      "sha256": "5917871d3cc970d8ce195101cbf65c1f68ec948022eb6070030342bb7edfb3bb"
     },
     {
-      "path": "artifacts/frontend/assets/fonts/cc27b30471250057.woff2",
-      "size": 31432,
-      "sha256": "83c005d49d8a6a50474c73a5a36ac0468076e9c4a29da7bdb14995d80560a5be"
+      "path": "artifacts/frontend/assets/inter-cyrillic-700-normal-DrXBdSj3.woff",
+      "size": 9912,
+      "sha256": "72b6daa49173e531027d8a260ef128e142a165811cab6a2875eefe0c3c58fa0e"
     },
     {
-      "path": "artifacts/frontend/assets/fonts/dbc85b0dfbaaa315.woff2",
-      "size": 18996,
-      "sha256": "1be3448e292fbf05ffe176fe1e43f135013d50b1e7d324ad1a558f623d3bb6f6"
+      "path": "artifacts/frontend/assets/inter-cyrillic-ext-400-normal-BQZuk6qB.woff2",
+      "size": 10232,
+      "sha256": "ef572f9187a8be018d9d9c2c6b77c1f6cb2af4199f02fc16c292ea10ab25a2cc"
     },
     {
-      "path": "artifacts/frontend/assets/fonts/e3237528af752eed.woff2",
-      "size": 48256,
-      "sha256": "3100e775e8616cd2611beecfa23a4263d7037586789b43f035236a2e6fbd4c62"
+      "path": "artifacts/frontend/assets/inter-cyrillic-ext-400-normal-DQukG94-.woff",
+      "size": 13336,
+      "sha256": "5cb2f1cc0936f89a42ceae34f5a5720248dc5b8114c12b1c33a7d2ef01a9b6b9"
     },
     {
-      "path": "artifacts/frontend/assets/fonts/eb83d8d40af4411f.woff2",
-      "size": 8872,
-      "sha256": "e17cfd15fb96909d64095015f958207063a0c07191da3512df7d560a781aebdf"
+      "path": "artifacts/frontend/assets/inter-cyrillic-ext-500-normal-B0yAr1jD.woff2",
+      "size": 10432,
+      "sha256": "1c2db92d3cd9b237ca7c9c07af556d542f28ded1db54cd4382cf776501c5291f"
     },
     {
-      "path": "artifacts/frontend/assets/fonts/fonts.css",
-      "size": 12068,
-      "sha256": "5742bd6a79d7a6b3371a14119436af7bb1b9cb09eed516b027b76e60d6276341"
+      "path": "artifacts/frontend/assets/inter-cyrillic-ext-500-normal-BmqWE9Dz.woff",
+      "size": 13452,
+      "sha256": "e250c05aebcf49971e0b25f476992dd463c28c0292ebb204d9db542fb5066ca7"
     },
     {
-      "path": "artifacts/frontend/assets/index-C6v9Ax9Z.css",
-      "size": 311093,
-      "sha256": "35844fc0c7498e8d0d682aa03792e25f21f3367d18dfc2eb125494cccb9ab033"
+      "path": "artifacts/frontend/assets/inter-cyrillic-ext-600-normal-Bcila6Z-.woff",
+      "size": 13464,
+      "sha256": "a5073285409443f4653c858de58c5dc0bfc2fd33e60d8747388345e7c5ab1ab3"
     },
     {
-      "path": "artifacts/frontend/assets/index-Rn0oHJVZ.js",
-      "size": 1475171,
-      "sha256": "776848ef8c90b26576984d2f8fd3b48f48c3441abd537a28862455d91669cfbb"
+      "path": "artifacts/frontend/assets/inter-cyrillic-ext-600-normal-Dfes3d0z.woff2",
+      "size": 10484,
+      "sha256": "509fca9c59564f9a846fa69bc647f9b050fc11abf1c9f6f3da71fb2d5ed425bd"
+    },
+    {
+      "path": "artifacts/frontend/assets/inter-cyrillic-ext-700-normal-BjwYoWNd.woff2",
+      "size": 10496,
+      "sha256": "a46b99781170971e2c99a87ff7ee9f5cf90a9dfcd18175e1be6300201d030123"
+    },
+    {
+      "path": "artifacts/frontend/assets/inter-cyrillic-ext-700-normal-LO58E6JB.woff",
+      "size": 13408,
+      "sha256": "0f3d4be2bd7018f78fa3484a5f6e9d8ce567689426643b84a47e8cabb91e5f16"
+    },
+    {
+      "path": "artifacts/frontend/assets/inter-greek-400-normal-B4URO6DV.woff2",
+      "size": 7776,
+      "sha256": "c15ddd00a9927b56f5c655a41f976f79bd848a20cce91fc14227751872a1cc27"
+    },
+    {
+      "path": "artifacts/frontend/assets/inter-greek-400-normal-q2sYcFCs.woff",
+      "size": 9924,
+      "sha256": "bdae9d28729e8c68587d5d54e216d771a40d7a6800e824586a6e2f570c2f10df"
+    },
+    {
+      "path": "artifacts/frontend/assets/inter-greek-500-normal-BIZE56-Y.woff2",
+      "size": 7920,
+      "sha256": "cc197d79d33a3615a047baae85f4d1957f6f98b8898313658e160b1d519b1b6f"
+    },
+    {
+      "path": "artifacts/frontend/assets/inter-greek-500-normal-Xzm54t5V.woff",
+      "size": 9980,
+      "sha256": "86d55a4b1b9cbced7e61e76d5d44cf49d0bd1c814d3df2de67b7136ab4fdcece"
+    },
+    {
+      "path": "artifacts/frontend/assets/inter-greek-600-normal-BZpKdvQh.woff",
+      "size": 10032,
+      "sha256": "090b24e22fc4ddf41450d13bdec81c8a74808b9fc7edaf8df06c909b177a8992"
+    },
+    {
+      "path": "artifacts/frontend/assets/inter-greek-600-normal-plRanbMR.woff2",
+      "size": 7944,
+      "sha256": "9c5a897f9d9fcfe60d90631d766ae62b4bf1edd76633fa7a4b2f8c87e036789b"
+    },
+    {
+      "path": "artifacts/frontend/assets/inter-greek-700-normal-BUv2fZ6O.woff",
+      "size": 9980,
+      "sha256": "53368f53d5fc43381dcc45c8533ba2476f80337136313525f96dcbdc736616a5"
+    },
+    {
+      "path": "artifacts/frontend/assets/inter-greek-700-normal-C3JjAnD8.woff2",
+      "size": 7920,
+      "sha256": "737c6c91cd60372d30e6540096ada83c89c9b4613cd7472e3366bf2e07ad99f1"
+    },
+    {
+      "path": "artifacts/frontend/assets/inter-greek-ext-400-normal-DGGRlc-M.woff2",
+      "size": 5264,
+      "sha256": "eadedd9e13c2582430a9fb1519eb86152fdabb483a6f66d90f8d8a52e977a1b7"
+    },
+    {
+      "path": "artifacts/frontend/assets/inter-greek-ext-400-normal-KugGGMne.woff",
+      "size": 7064,
+      "sha256": "4f2b6f92ddfece8812e79774d446218aa6e0773ff8c2d31130fe2bdc23bd22d0"
+    },
+    {
+      "path": "artifacts/frontend/assets/inter-greek-ext-500-normal-2j5mBUwD.woff",
+      "size": 7192,
+      "sha256": "c85d11bde719108cc9a4f6f5b008087f6c36493b47395580d4f5336182b0f0c7"
+    },
+    {
+      "path": "artifacts/frontend/assets/inter-greek-ext-500-normal-C4iEst2y.woff2",
+      "size": 5428,
+      "sha256": "75a9ec9383a3b7a7bf7cfb94f64edf38d9cfdc5f7ffa0cbed2733627a6e4426d"
+    },
+    {
+      "path": "artifacts/frontend/assets/inter-greek-ext-600-normal-B8X0CLgF.woff",
+      "size": 7212,
+      "sha256": "efc7aa9cce5c505dd8cc4c4daf00247fa805f37bcda96079239ba3358ab27dfb"
+    },
+    {
+      "path": "artifacts/frontend/assets/inter-greek-ext-600-normal-DRtmH8MT.woff2",
+      "size": 5432,
+      "sha256": "399f94d75aa73403e40e2353e8c0cc75c38f7362a6ca263b3b02d9723157ffe5"
+    },
+    {
+      "path": "artifacts/frontend/assets/inter-greek-ext-700-normal-BoQ6DsYi.woff",
+      "size": 7216,
+      "sha256": "b26ed64c9135a750ad580b92152bedeef90771e74e18f6f7759a6d7adb0f1b5d"
+    },
+    {
+      "path": "artifacts/frontend/assets/inter-greek-ext-700-normal-qfdV9bQt.woff2",
+      "size": 5444,
+      "sha256": "b7b2732ebc981b30a5463ffc850407649dba41e625aee124cc63293da4547629"
+    },
+    {
+      "path": "artifacts/frontend/assets/inter-latin-400-normal-C38fXH4l.woff2",
+      "size": 23664,
+      "sha256": "8909904ab6c872eb994093482a88a28eca2cd95912d7b6fecd72103b0dc07edc"
+    },
+    {
+      "path": "artifacts/frontend/assets/inter-latin-400-normal-CyCys3Eg.woff",
+      "size": 30696,
+      "sha256": "e20fa0b4fd2dd26e4d14b3ac3cc922509c3a63fa5e910e90c614544aa042dd45"
+    },
+    {
+      "path": "artifacts/frontend/assets/inter-latin-500-normal-BL9OpVg8.woff",
+      "size": 31284,
+      "sha256": "9b42c108da48b5ed55a3072e815ffee2d271562e6c0dd6998910e8f9c09e0a3d"
+    },
+    {
+      "path": "artifacts/frontend/assets/inter-latin-500-normal-Cerq10X2.woff2",
+      "size": 24272,
+      "sha256": "f3779f1efccc4bdcdf9c0a02ab95bf6bd092ed09c48c08cedc725889edd1d19f"
+    },
+    {
+      "path": "artifacts/frontend/assets/inter-latin-600-normal-CiBQ2DWP.woff",
+      "size": 31260,
+      "sha256": "6a9cb3a509b4eeaf12b7dda6c4aacac3e85d07f4201bf4dd716e332e692b87bd"
+    },
+    {
+      "path": "artifacts/frontend/assets/inter-latin-600-normal-LgqL8muc.woff2",
+      "size": 24452,
+      "sha256": "f9a06e79cd3a2a20951c0f0e28f66dd0e6d3fda73911d640a2125c8fcb78f21a"
+    },
+    {
+      "path": "artifacts/frontend/assets/inter-latin-700-normal-BLAVimhd.woff",
+      "size": 31320,
+      "sha256": "7c5ed5655730de337704d3fc94628515cd7e3d8d32368871709bf56ac0397e7a"
+    },
+    {
+      "path": "artifacts/frontend/assets/inter-latin-700-normal-Yt3aPRUw.woff2",
+      "size": 24356,
+      "sha256": "6f56409fd3d64bb85f7d070bce20749db2d66b6d63cec586cc22d1c761be2491"
+    },
+    {
+      "path": "artifacts/frontend/assets/inter-latin-ext-400-normal-77YHD8bZ.woff",
+      "size": 47560,
+      "sha256": "22ae8360fbad24d2af7c6c9898a346c881774dc87f7cf94bd262c48ad58d7116"
+    },
+    {
+      "path": "artifacts/frontend/assets/inter-latin-ext-400-normal-C1nco2VV.woff2",
+      "size": 35000,
+      "sha256": "6744a7f509ebc6ab220a6cd4ea77e898adf014f03d88dcda5d45d8a9feefb4e9"
+    },
+    {
+      "path": "artifacts/frontend/assets/inter-latin-ext-500-normal-BxGbmqWO.woff",
+      "size": 48492,
+      "sha256": "30d2903ce97f8a89ea0e9c083b42cb8bf97e7bbb5607e7f00352815f19cb0d5b"
+    },
+    {
+      "path": "artifacts/frontend/assets/inter-latin-ext-500-normal-CV4jyFjo.woff2",
+      "size": 36024,
+      "sha256": "2c6fbc42d315528beb06c1096df45487bf4186c4b78b8111d12c9c951f8acca2"
+    },
+    {
+      "path": "artifacts/frontend/assets/inter-latin-ext-600-normal-CIVaiw4L.woff",
+      "size": 48668,
+      "sha256": "22ff20a6170674fb9637c2a072227be86303bb6ec52b829b9d7077405f7196a6"
+    },
+    {
+      "path": "artifacts/frontend/assets/inter-latin-ext-600-normal-D2bJ5OIk.woff2",
+      "size": 36260,
+      "sha256": "e4bdf67b0cd15ca9e184509275be95db942195d3cc2b17f6a0452f2adf75d0bf"
+    },
+    {
+      "path": "artifacts/frontend/assets/inter-latin-ext-700-normal-Ca8adRJv.woff2",
+      "size": 36244,
+      "sha256": "143f9504f1377012aa3e39c90c4354ef429cb0494b9ac0e1437f1a81e5412236"
+    },
+    {
+      "path": "artifacts/frontend/assets/inter-latin-ext-700-normal-TidjK2hL.woff",
+      "size": 48632,
+      "sha256": "1761edba32014180deab3dbbe3f7156c64ef6f34bc76313ba31ce227fc9ff391"
+    },
+    {
+      "path": "artifacts/frontend/assets/inter-vietnamese-400-normal-Bbgyi5SW.woff",
+      "size": 6500,
+      "sha256": "54aa42d325bcdfd623ecb9eac4a5e3c6420c63d7b86e9d8545fb479f653beb57"
+    },
+    {
+      "path": "artifacts/frontend/assets/inter-vietnamese-400-normal-DMkecbls.woff2",
+      "size": 4972,
+      "sha256": "547ad9fdaeb0ae43487f4b8a02e47c36553c0c0cb73c8aa98f93b7b615f6b55d"
+    },
+    {
+      "path": "artifacts/frontend/assets/inter-vietnamese-500-normal-DOriooB6.woff2",
+      "size": 5112,
+      "sha256": "44e36aa5a8f12130029a29bb0e6695d0262b67446ce321e878b1fb56162b5de6"
+    },
+    {
+      "path": "artifacts/frontend/assets/inter-vietnamese-500-normal-mJboJaSs.woff",
+      "size": 6596,
+      "sha256": "18a4a09f751671cd8929d7c66e8fe7d820b511c36e51cf6047ffceab88eec4a4"
+    },
+    {
+      "path": "artifacts/frontend/assets/inter-vietnamese-600-normal-BuLX-rYi.woff",
+      "size": 6640,
+      "sha256": "24a01e7bd947aeef91ae8f7b8edeb23fadaf5ceda34a610ce62d2bbdaea57e83"
+    },
+    {
+      "path": "artifacts/frontend/assets/inter-vietnamese-600-normal-Cc8MFFhd.woff2",
+      "size": 5100,
+      "sha256": "1aeb94ae9db052a4a2fe6f3046f928cff1fdbd7abdf870a9a01c13cae6faeba5"
+    },
+    {
+      "path": "artifacts/frontend/assets/inter-vietnamese-700-normal-BZaoP0fm.woff",
+      "size": 6632,
+      "sha256": "412023ab2f41333b373e2c6eb2a3ebab806fddd610015d2ae8cd4f4314c7ba92"
+    },
+    {
+      "path": "artifacts/frontend/assets/inter-vietnamese-700-normal-DlLaEgI2.woff2",
+      "size": 5104,
+      "sha256": "5fafa3829a16d9ea5ac3a67c51e54186353122790b604a3e361f96cab188da8b"
+    },
+    {
+      "path": "artifacts/frontend/assets/jetbrains-mono-cyrillic-400-normal-BEIGL1Tu.woff2",
+      "size": 5328,
+      "sha256": "522f5827308102a9c0ea7860b5a11306043610ecf03d150ba32056a06e8c56e2"
+    },
+    {
+      "path": "artifacts/frontend/assets/jetbrains-mono-cyrillic-400-normal-ugxPyKxw.woff",
+      "size": 6976,
+      "sha256": "67c9cc7864b4940dbfb246c7b452c1de8e96f140f334d363fcdd87dbfeadab72"
+    },
+    {
+      "path": "artifacts/frontend/assets/jetbrains-mono-cyrillic-500-normal-DJqRU3vO.woff",
+      "size": 7024,
+      "sha256": "d408a664dc721f614e6346e09f3f32b2837005db28f5e4797ce8dd19da07e4ea"
+    },
+    {
+      "path": "artifacts/frontend/assets/jetbrains-mono-cyrillic-500-normal-DmUKJPL_.woff2",
+      "size": 5356,
+      "sha256": "26c9ed511def1f0fd3d1b5fe6d5c0c594d9ef8dd2435d2ff240ea265a416b6e4"
+    },
+    {
+      "path": "artifacts/frontend/assets/jetbrains-mono-greek-400-normal-B9oWc5Lo.woff",
+      "size": 5664,
+      "sha256": "09f89e8369d7745ac5fe92e62a9ea13f66f40fd95b5495fac014c54b3a1ca6cc"
+    },
+    {
+      "path": "artifacts/frontend/assets/jetbrains-mono-greek-400-normal-C190GLew.woff2",
+      "size": 4228,
+      "sha256": "365b7a8eaff022b13ed0561fde3890a04a30507d773ecd5adb3aca8e766a285c"
+    },
+    {
+      "path": "artifacts/frontend/assets/jetbrains-mono-greek-500-normal-D7SFKleX.woff",
+      "size": 5720,
+      "sha256": "89656e472646bf4d52c23d499fa2e467ad3ee73447fda24eefb96e176b1312d6"
+    },
+    {
+      "path": "artifacts/frontend/assets/jetbrains-mono-greek-500-normal-JpySY46c.woff2",
+      "size": 4284,
+      "sha256": "5b6dee4610cdaab7c4218c1692aa9a536414010eef4e5b3cfb25f45007811bcc"
+    },
+    {
+      "path": "artifacts/frontend/assets/jetbrains-mono-latin-400-normal-6-qcROiO.woff",
+      "size": 27496,
+      "sha256": "658b9ee07b0249cf910a8d6f3d812d46c962bae81d7379a0355b1db35c61586f"
+    },
+    {
+      "path": "artifacts/frontend/assets/jetbrains-mono-latin-400-normal-V6pRDFza.woff2",
+      "size": 21168,
+      "sha256": "14425ba9c695763c1547f48a206b7aa60350a33ae23de09f0407877f3fcd89eb"
+    },
+    {
+      "path": "artifacts/frontend/assets/jetbrains-mono-latin-500-normal-BWZEU5yA.woff2",
+      "size": 21832,
+      "sha256": "cb182feeed4d798ff6961d3c79f7026279448fca0676438aaecb21f3fc39553a"
+    },
+    {
+      "path": "artifacts/frontend/assets/jetbrains-mono-latin-500-normal-CJOVTJB7.woff",
+      "size": 28208,
+      "sha256": "a270dd0bf13d91053b8999b7c120ffadb59680cfd63fe1a6b388a13bf2809fe1"
+    },
+    {
+      "path": "artifacts/frontend/assets/jetbrains-mono-latin-ext-400-normal-Bc8Ftmh3.woff2",
+      "size": 7336,
+      "sha256": "505dfba8ecbe77e82765f36d317ed7ef4ac42719dc5f4ae68d1c483fd22d0d14"
+    },
+    {
+      "path": "artifacts/frontend/assets/jetbrains-mono-latin-ext-400-normal-fXTG6kC5.woff",
+      "size": 10128,
+      "sha256": "e7131bbf591e1ed9b74e44e162f6a39affa00ac21654cb683585d085733f6355"
+    },
+    {
+      "path": "artifacts/frontend/assets/jetbrains-mono-latin-ext-500-normal-Cut-4mMH.woff2",
+      "size": 7528,
+      "sha256": "879df9319f1cbf633bee1dd489e376a9e1e8c458f4abddcfe381cb83b5e6b027"
+    },
+    {
+      "path": "artifacts/frontend/assets/jetbrains-mono-latin-ext-500-normal-ckzbgY84.woff",
+      "size": 10336,
+      "sha256": "8006c29f8ec53d12d281774d669a02a70b599590d110ff1a4b4a40a6fd975676"
+    },
+    {
+      "path": "artifacts/frontend/assets/jetbrains-mono-vietnamese-400-normal-CqNFfHCs.woff",
+      "size": 5372,
+      "sha256": "1dfe0f740fa86409034058e49474b01126ae9ea8c1ecda905917b90d57f03b00"
+    },
+    {
+      "path": "artifacts/frontend/assets/jetbrains-mono-vietnamese-500-normal-DNRqzVM1.woff",
+      "size": 5476,
+      "sha256": "6b14186bc983291a126aa8d6d9c3044415c968262279eecbb9bb194f1daf7800"
     },
     {
       "path": "artifacts/frontend/assets/probe-elc1i3md.js",
@@ -244,17 +544,17 @@
     {
       "path": "artifacts/frontend/index.html",
       "size": 881,
-      "sha256": "aebaf7ebccaa1f7e580a0a228b568196898f7ea79186637b234e2b52e8144b49"
+      "sha256": "5fdcc829ca2ae2c9660d0f919c29be94dfc8c5654b87932213dd94702198188d"
     },
     {
       "path": "artifacts/linux-amd64/atlas-config-backfill",
       "size": 10330272,
-      "sha256": "9a8abf77ecc0350e7dd6ff1c3eb5fad660c3d263d0f1105a29651ae0e37f0b51"
+      "sha256": "7c4958bdc399b4bfce512083220cc6f5a2033a4e12b486d4b731925d6e1d5bd3"
     },
     {
       "path": "artifacts/linux-amd64/atlas-gateway",
       "size": 48742560,
-      "sha256": "840061fa29d72b5c1e90ad88245eca283d436d5717385f95181e6aa9228d4610"
+      "sha256": "8cd4f24e13fe3e106959d6149c04161b5158663f1d69c4a51ad54d22e57beca6"
     },
     {
       "path": "artifacts/linux-amd64/atlas-migrate",
@@ -269,27 +569,27 @@
     {
       "path": "artifacts/linux-amd64/atlas-payouts-quarantine",
       "size": 15790240,
-      "sha256": "f83a76b35b18eac288008c526882db2244ac8361434447ce2c77335a24615609"
+      "sha256": "5bbd6fdf2d1a42e97831e5df43067681ef946b60fc3b9cba274b3990fc6e9198"
     },
     {
       "path": "artifacts/linux-amd64/atlas-portal",
       "size": 34250912,
-      "sha256": "97ff57453d1da29133a40d8e404407260e1d442e3e665a4d4eddb0e1c68e3ee9"
+      "sha256": "8d9417234d535824d661631a03557b851089ac007b701be94bee3f37b65a8405"
     },
     {
       "path": "artifacts/linux-amd64/atlas-reset-owner-password",
       "size": 10387616,
-      "sha256": "219bf7e0b1b0a8e1e38067fb80f59926f7a58fc5e836af4efda8532671c2e22b"
+      "sha256": "2142b76e564d27a04b704037e2f150fe0d663ad167087429d52386abc24bb255"
     },
     {
       "path": "artifacts/linux-amd64/atlas-rotate-secrets",
       "size": 10436768,
-      "sha256": "b85ee4462ca61126c0c483e9c4530f55d11004d21db56bab3a7b443fccdb3336"
+      "sha256": "93d2a971de4e372dcb66af1fe98044665d662ce3e5aeb8684be749e904360582"
     },
     {
       "path": "artifacts/linux-amd64/atlas-setup-code",
       "size": 10322080,
-      "sha256": "dbda5f00eca601f4b90ba95b00c0fa56e3de3deade890ec162e956d49cd664bf"
+      "sha256": "e460796d81b4f0a6552d6b768cdb393341dc031e245a8da36f5f8730bc74a160"
     },
     {
       "path": "artifacts/linux-amd64/atlas-update-check",
@@ -349,7 +649,7 @@
     {
       "path": "docker-compose.yml",
       "size": 14006,
-      "sha256": "431bfc2d3bbd7ae925cedb30e7f8778e988fa0dc7ab998e6b58e0dab5f48a9ec"
+      "sha256": "434c5263580fd19aeef0981d9e6ab1e3f72c49d24de04427b76c4a7a08dc0dca"
     },
     {
       "path": "docs/backup-restore.md",
@@ -364,7 +664,7 @@
     {
       "path": "env/compose.env.example",
       "size": 1513,
-      "sha256": "8b84b3ac1949df9a31890276516583ee35811ab3b7c130e9781b525ac0abf262"
+      "sha256": "3efe7f1097b4e6ffb43aa18209638d76d94b5301cea589e075489a2bf46c4991"
     },
     {
       "path": "env/edge.env.example",
@@ -434,12 +734,12 @@
     {
       "path": "k8s/04-jobs.yaml",
       "size": 1315,
-      "sha256": "3bd2182efab40872d0813c3384346abb5c8c93fcea1e8b77db925fe8de66ef80"
+      "sha256": "c9c954fc93860108e633113153b4012f7571ab36f3a45f3c52272732913d3473"
     },
     {
       "path": "k8s/05-apps.yaml",
       "size": 6560,
-      "sha256": "7a51906b20dd13eb2c1fefe21953c5fc07e68313a9172f94e2f1e15714a2d79f"
+      "sha256": "b0005d735346580db36b072cbd3f7e07aa51ccf10468f43814d076b9986519df"
     },
     {
       "path": "k8s/06-ingress.yaml",
@@ -449,17 +749,17 @@
     {
       "path": "k8s/README.md",
       "size": 7022,
-      "sha256": "526e76ce96e3fd4d36a629bbec66c46f9cb0c14e747c3878f739796890a0bf40"
+      "sha256": "066407b4cf7d7a5b6d4ea1d5ffb7695d816074ffcf58ef9d1678baff9a383974"
     },
     {
       "path": "k8s/kustomization.yaml",
       "size": 546,
-      "sha256": "9a59b16e6f8a75fc45d183627570020db354556b09179b5ddb4e4274e0a6437c"
+      "sha256": "473d69a4d6a672b9c868448af18bbf6d30448a8782ff60305a5a2a58e25ac9b9"
     },
     {
       "path": "release.json",
       "size": 1207,
-      "sha256": "2b815e35ef9daf99af393cc11b94aa69f62de941dbd7d9a40821c422cd73bac1"
+      "sha256": "e25fe10a9c9bf97651b404fa8f7a5bd800969eb1db8f6cf4216953ce1f278e2e"
     },
     {
       "path": "scripts/check-config.sh",

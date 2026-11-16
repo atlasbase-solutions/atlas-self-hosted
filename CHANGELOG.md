@@ -4,6 +4,15 @@ All notable changes to the Atlas Self-Hosted distribution are documented here, n
 
 Version 1.0.9 is the first public release of this repository. Its section lists every customer-facing change made since the 1.0.0 baseline, so that an installation made from an earlier private build can see everything it is about to receive.
 
+## 1.3.2 — 2026-11-16
+
+Changes since 1.3.1.
+
+### Fixes
+
+- The portal reads more consistently: amounts are formatted for your language on every screen and so are rate percentages (no more `1840.000000 EUR` in anti-fraud, `1840.00` in campaigns or `12.5 %` in a Russian offer card); the revenue model form shows rates without trailing zeros and accepts a decimal comma, screen descriptions are shorter, internal technical terms and raw codes are replaced with plain names, the anti-fraud overview and investigation queue use the same cards, tables and filters as the rest of the portal, and dashboards no longer repeat the same numbers or show empty widgets.
+- The portal now ships its fonts with the web app instead of loading them from Google Fonts, so it looks the same in a closed network without internet access and visitors' browsers no longer contact a third party.
+
 ## 1.3.1 — 2026-11-15
 
 Changes since 1.3.0.
