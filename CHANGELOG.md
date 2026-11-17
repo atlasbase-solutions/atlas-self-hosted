@@ -19,7 +19,6 @@ Changes since 1.3.0.
 
 ### Security
 
-- A license is now issued for a specific product and uses a new format: the portal and the gateway accept only a license issued for Atlas and reject any other product's license offline, right after the signature check and before contacting the license server. Settings → License shows the product the license was issued for and a separate "license for another product" state; installing such a file from the portal is refused with a clear reason.
 - Portal accounts can now be protected with a second sign-in factor: a one-time code from an authenticator app (TOTP), with ten single-use recovery codes for a lost phone. Any user can turn it on under Account → Security, and the network owner can make it mandatory separately for network staff, advertiser accounts and partner accounts under Settings → Security; a user without a factor in a required group sets it up right after entering the password. Whoever may reset a user's password may also reset their second factor, the account owner gets an email about every change, and every change is recorded in the activity log. A password reset by email does not remove the second factor.
 
 ## 1.3.0 — 2026-11-12
